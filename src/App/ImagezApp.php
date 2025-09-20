@@ -41,7 +41,7 @@ class ImagezApp {
 
 		$containerBuilder = new ContainerBuilder();
 		if (!$this->debugMode) {
-			$containerBuilder->enableCompilation(__DIR__ . '/../var/cache');
+			$containerBuilder->enableCompilation($this->settings->get('cachePath'));
 		}
 
 		// logger
