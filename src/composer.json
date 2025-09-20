@@ -1,0 +1,50 @@
+{
+    "version": "0.0.1",
+    "name": "smart-apiz/imagez",
+    "description": "Imagez smart API",
+    "keywords": [
+        "microframework",
+        "rest",
+        "router",
+        "psr7"
+    ],
+    "homepage": "http://github.com/lotcz/imagez",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Karel",
+            "homepage": "http://zavadil.eu"
+        }
+    ],
+    "require": {
+        "php": "^8.4",
+        "ext-json": "*",
+        "monolog/monolog": "^2.8",
+        "php-di/php-di": "^7.1.1",
+        "slim/psr7": "^1.5",
+        "slim/slim": "^4.10"
+    },
+    "require-dev": {
+
+    },
+    "config": {
+        "allow-plugins": {
+ 
+        },
+        "process-timeout": 0,
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "App/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+
+        }
+    },
+    "scripts": {
+        "start": "php -S localhost:8080 -t public"
+    }
+}
