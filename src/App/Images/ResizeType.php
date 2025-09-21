@@ -7,23 +7,18 @@ namespace App\Images;
 class ResizeType {
 
 	/**
-	 * Get original image
-	 */
-	public const NONE = 'none';
-
-	/**
-	 * Simply scale down to not exceed requested dimensions
+	 * Simply scale down - this will change aspect ratio!
 	 */
 	public const SCALE = 'scale';
 
 	/**
-	 * Crop to requested dimensions.
-	 * Cropped area will be determined by CropPosition
+	 * Scale and crop to match exactly the requested dimensions.
+	 * Crop position area will be determined by CropPosition
 	 */
 	public const CROP = 'crop';
 
 	/**
-	 * Scale and crop to fit desired dimensions - this is what is usually desired and is the default
+	 * Scale to fit desired dimensions without changing aspect ratio - this is the default
 	 */
 	public const FIT = 'fit';
 
