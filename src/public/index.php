@@ -11,6 +11,7 @@ $settings = new ArraySettings(
 	[
 		'debugMode' => true,
 		'cachePath' => __DIR__ . '/../var/cache/',
+		'maxImageSizeBytes' => 1024 * 1024 * 10,
 		'logger' => [
 			'name' => 'imagez-app',
 			'path' => __DIR__ . '/../var/logs/',

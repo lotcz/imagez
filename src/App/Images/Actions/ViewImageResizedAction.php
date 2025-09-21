@@ -12,8 +12,9 @@ class ViewImageResizedAction extends ImageAction {
 
 	protected function action(): Response {
 		$name = $this->resolveArg('name');
+		$originalPath = $this->imageStorage->getOriginalPath($name);
 
-		if (!$this->imageStorage->originalExists($name)) {
+		if (!$this->imageStorage->fileExists($originalPath)) {
 			return $this->respondWithError(
 				new ActionError(
 					ActionError::RESOURCE_NOT_FOUND,
@@ -23,7 +24,7 @@ class ViewImageResizedAction extends ImageAction {
 			);
 		}
 
-		$path = $this->imageResizer->resize(new ImageRequest($name, 100, 100));
+		$path = $this->imageResizer->getResizedImagePath($originalPath, new ImageRequest($name, 100, 100));
 		return $this->respondWithImage($path, $name);
 	}
 }

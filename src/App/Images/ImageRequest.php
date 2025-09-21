@@ -24,12 +24,12 @@ class ImageRequest {
 	public ?string $imageExt;
 
 	public function __construct(
-		string  $name,
-		int     $maxWidth,
-		int     $maxHeight,
-		string  $resizeType = ResizeType::FIT,
-		string  $cropPositionHorizontal = CropPosition::CENTER,
-		string  $cropPositionVertical = CropPosition::CENTER,
+		string $name,
+		int $maxWidth,
+		int $maxHeight,
+		string $resizeType = ResizeType::FIT,
+		string $cropPositionHorizontal = CropPosition::CENTER,
+		string $cropPositionVertical = CropPosition::CENTER,
 		?string $imageExt = null
 	) {
 		$this->name = $name;
@@ -41,10 +41,12 @@ class ImageRequest {
 		$this->imageExt = $imageExt;
 	}
 
-	public function getPathName(): string {
-		$resize = "{$this->maxWidth}-{$this->maxHeight}-{$this->resizeType}-{$this->cropPositionHorizontal}-{$this->cropPositionVertical}";
-		$file = StringHelper::isBlank($this->imageExt) ? $this->name : PathHelper::getFileBase($this->name) . '.' . $this->imageExt;
-		return PathHelper::of($resize, $file);
+	public function getResizedDirName(): string {
+		return "{$this->maxWidth}-{$this->maxHeight}-{$this->resizeType}-{$this->cropPositionHorizontal}-{$this->cropPositionVertical}";
+	}
+
+	public function getResizedFileName(): string {
+		return StringHelper::isBlank($this->imageExt) ? $this->name : PathHelper::getFileBase($this->name) . '.' . $this->imageExt;
 	}
 
 }

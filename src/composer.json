@@ -23,7 +23,8 @@
         "slim/psr7": "^1.5",
         "slim/slim": "^4.10",
 		"ext-json": "*",
-		"ext-fileinfo": "*"
+		"ext-fileinfo": "*",
+		"ext-gd": "*"
 	},
     "require-dev": {
 

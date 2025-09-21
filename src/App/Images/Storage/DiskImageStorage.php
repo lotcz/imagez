@@ -11,20 +11,24 @@ use Psr\Log\LoggerInterface;
 
 class DiskImageStorage implements ImageStorage {
 
+	private LoggerInterface $logger;
+
 	private string $baseDir;
 
 	private string $originalDir;
 
 	public function __construct(LoggerInterface $logger, Settings $settings) {
+		$this->logger = $logger;
+
 		$this->baseDir = PathHelper::of($settings->get('cachePath'), 'image-store');
 		if (!file_exists($this->baseDir)) {
-			$logger->info("Creating base dir: $this->baseDir");
+			$this->logger->info("Creating base dir: $this->baseDir");
 			mkdir($this->baseDir, 0777, true);
 		}
 
 		$this->originalDir = PathHelper::of($this->baseDir, 'original');
 		if (!file_exists($this->originalDir)) {
-			$logger->info("Creating original dir: $this->originalDir");
+			$this->logger->info("Creating original dir: $this->originalDir");
 			mkdir($this->originalDir, 0777, true);
 		}
 	}
@@ -34,10 +38,15 @@ class DiskImageStorage implements ImageStorage {
 	}
 
 	public function getResizedPath(ImageRequest $imageRequest): string {
-		return PathHelper::of($this->baseDir, $imageRequest->getPathName());
+		$resizedDir = PathHelper::of($this->baseDir, $imageRequest->getResizedDirName());
+		if (!file_exists($resizedDir)) {
+			$this->logger->info("Creating resized dir: $resizedDir");
+			mkdir($resizedDir, 0777, true);
+		}
+		return PathHelper::of($resizedDir, $imageRequest->getResizedFileName());
 	}
 
-	private function fileExists(string $path): bool {
+	public function fileExists(string $path): bool {
 		return file_exists($path);
 	}
 

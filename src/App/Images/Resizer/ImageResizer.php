@@ -8,8 +8,6 @@ use App\Images\ImageRequest;
 
 interface ImageResizer {
 
-	public function exists(string $name): bool;
-
-	public function resize(ImageRequest $imageRequest): string;
+	public function getResizedImagePath(string $originalPath, ImageRequest $imageRequest): string;
 
 }

@@ -12,6 +12,8 @@ interface ImageStorage {
 
 	public function getResizedPath(ImageRequest $imageRequest): string;
 
+	public function fileExists(string $path): bool;
+
 	public function originalExists(string $name): bool;
 
 	public function resizeExists(ImageRequest $imageRequest): bool;

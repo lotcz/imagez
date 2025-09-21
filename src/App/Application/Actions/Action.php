@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Actions;
 
+use App\Application\Settings\Settings;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
@@ -14,14 +15,17 @@ abstract class Action {
 
 	protected LoggerInterface $logger;
 
+	protected Settings $settings;
+
 	protected Request $request;
 
 	protected Response $response;
 
 	protected array $args;
 
-	public function __construct(LoggerInterface $logger) {
+	public function __construct(LoggerInterface $logger, Settings $settings) {
 		$this->logger = $logger;
+		$this->settings = $settings;
 	}
 
 	public function __invoke(Request $request, Response $response, array $args): Response {

@@ -11,8 +11,9 @@ class ViewImageOriginalAction extends ImageAction {
 
 	protected function action(): Response {
 		$name = $this->resolveArg('name');
+		$path = $this->imageStorage->getOriginalPath($name);
 
-		if (!$this->imageStorage->originalExists($name)) {
+		if (!$this->imageStorage->fileExists($path)) {
 			return $this->respondWithError(
 				new ActionError(
 					ActionError::RESOURCE_NOT_FOUND,
@@ -22,7 +23,6 @@ class ViewImageOriginalAction extends ImageAction {
 			);
 		}
 
-		$path = $this->imageStorage->getOriginalPath($name);
 		return $this->respondWithImage($path, $name);
 	}
 }

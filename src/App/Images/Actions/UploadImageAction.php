@@ -30,6 +30,20 @@ class UploadImageAction extends ImageAction {
 			);
 		}
 
+		/* check file size */
+		$maxBytes = $this->settings->get('maxImageSizeBytes', 0);
+		if ($maxBytes > 0) {
+			$size = $uploadedFile->getSize();
+			if (is_numeric($size) && $size > $maxBytes) {
+				return $this->respondWithError(
+					new ActionError(
+						ActionError::BAD_REQUEST,
+						"Image size $size exceeds max allowed size $maxBytes"
+					)
+				);
+			}
+		}
+
 		$originalFilename = $uploadedFile->getClientFilename();
 		$originalExtension = PathHelper::getFileExt($originalFilename);
 		$basename = bin2hex(random_bytes(12));
