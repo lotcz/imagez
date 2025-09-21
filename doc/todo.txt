@@ -1,5 +1,3 @@
-- limit to only known formats
-- allow changing image extension
 - token protection
 - quality check endpoint
 - allow browser caching

@@ -6,9 +6,9 @@ namespace App\Images\Actions;
 
 use App\Application\Actions\ActionError;
 use App\Images\Info\ImageSize;
-use App\Images\Resizer\CropPosition;
-use App\Images\Resizer\ResizeRequest;
-use App\Images\Resizer\ResizeType;
+use App\Images\Request\CropPosition;
+use App\Images\Request\ResizeRequest;
+use App\Images\Request\ResizeType;
 use Psr\Http\Message\ResponseInterface as Response;
 
 class ViewImageResizedAction extends ImageAction {
@@ -35,7 +35,8 @@ class ViewImageResizedAction extends ImageAction {
 			),
 			$this->getQueryParam('type', ResizeType::FIT),
 			$this->getQueryParam('horiz', CropPosition::CENTER),
-			$this->getQueryParam('vert', CropPosition::CENTER)
+			$this->getQueryParam('vert', CropPosition::CENTER),
+			$this->getQueryParam('ext')
 		);
 
 		$path = $this->imageResizer->getResizedImagePath($originalPath, $imageRequest);

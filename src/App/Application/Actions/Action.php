@@ -73,7 +73,7 @@ abstract class Action {
 		return $this->params[$name];
 	}
 
-	protected function getQueryParam(string $name, string $default): string {
+	protected function getQueryParam(string $name, ?string $default = null): ?string {
 		if (!isset($this->params[$name])) {
 			return $default;
 		}

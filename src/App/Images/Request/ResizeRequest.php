@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Images\Resizer;
+namespace App\Images\Request;
 
 use App\Application\Helpers\PathHelper;
 use App\Application\Helpers\StringHelper;

@@ -9,14 +9,15 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     libjpeg-dev \
     libjpeg62-turbo-dev \
+    libwebp-dev \
     zip \
     unzip
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Configure and install GD with JPEG support
-RUN docker-php-ext-configure gd --with-jpeg
+# Configure and install GD with JPEG and WebP support
+RUN docker-php-ext-configure gd --with-jpeg --with-webp
 RUN docker-php-ext-install -j$(nproc) gd
 
 # Install PHP extensions

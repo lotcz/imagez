@@ -6,7 +6,7 @@ namespace App\Images\Storage;
 
 use App\Application\Helpers\PathHelper;
 use App\Application\Settings\Settings;
-use App\Images\Resizer\ResizeRequest;
+use App\Images\Request\ResizeRequest;
 use Psr\Log\LoggerInterface;
 
 class DiskImageStorage implements ImageStorage {

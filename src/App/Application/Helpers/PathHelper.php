@@ -45,7 +45,7 @@ class PathHelper {
 	public static function getFileBase(string $fileName): string {
 		$ext = PathHelper::getFileExt($fileName);
 		if (StringHelper::isBlank($ext)) return $fileName;
-		return substr($fileName, 0, strlen($fileName) - strlen($ext));
+		return substr($fileName, 0, strlen($fileName) - strlen($ext) - 1);
 	}
 
 }

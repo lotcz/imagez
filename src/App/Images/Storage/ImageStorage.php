@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Images\Storage;
 
-use App\Images\Resizer\ResizeRequest;
+use App\Images\Request\ResizeRequest;
 
 interface ImageStorage {
 

@@ -7,6 +7,8 @@ namespace App\Images\Resizer;
 use App\Images\Formats\ImageFormats;
 use App\Images\Info\ImageInfo;
 use App\Images\Info\ImageSize;
+use App\Images\Request\ResizeRequest;
+use App\Images\Request\ResizeType;
 use App\Images\Storage\ImageStorage;
 use Psr\Log\LoggerInterface;
 use Throwable;
