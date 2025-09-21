@@ -1,6 +1,6 @@
 - limit to only known formats
-- token protection
 - allow changing image extension
+- token protection
 - quality check endpoint
 - allow browser caching
 - implement crop position

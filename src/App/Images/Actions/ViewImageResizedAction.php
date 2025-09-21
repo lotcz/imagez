@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace App\Images\Actions;
 
 use App\Application\Actions\ActionError;
-use App\Images\CropPosition;
-use App\Images\ImageRequest;
-use App\Images\ResizeType;
+use App\Images\Info\ImageSize;
+use App\Images\Resizer\CropPosition;
+use App\Images\Resizer\ResizeRequest;
+use App\Images\Resizer\ResizeType;
 use Psr\Http\Message\ResponseInterface as Response;
 
 class ViewImageResizedAction extends ImageAction {
@@ -26,10 +27,12 @@ class ViewImageResizedAction extends ImageAction {
 			);
 		}
 
-		$imageRequest = new ImageRequest(
+		$imageRequest = new ResizeRequest(
 			$name,
-			$this->requireIntQueryParam('width'),
-			$this->requireIntQueryParam('height'),
+			new ImageSize(
+				$this->requireIntQueryParam('width'),
+				$this->requireIntQueryParam('height')
+			),
 			$this->getQueryParam('type', ResizeType::FIT),
 			$this->getQueryParam('horiz', CropPosition::CENTER),
 			$this->getQueryParam('vert', CropPosition::CENTER)

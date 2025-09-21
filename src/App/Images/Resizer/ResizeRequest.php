@@ -2,18 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Images;
+namespace App\Images\Resizer;
 
 use App\Application\Helpers\PathHelper;
 use App\Application\Helpers\StringHelper;
+use App\Images\CropPosition;
+use App\Images\Info\ImageSize;
+use App\Images\ResizeTypeKey;
 
-class ImageRequest {
+class ResizeRequest {
 
 	public string $name;
 
-	public int $maxWidth;
-
-	public int $maxHeight;
+	public ImageSize $size;
 
 	public string $resizeType;
 
@@ -25,16 +26,14 @@ class ImageRequest {
 
 	public function __construct(
 		string $name,
-		int $maxWidth,
-		int $maxHeight,
-		string $resizeType = ResizeType::FIT,
+		ImageSize $size,
+		string $resizeType = ResizeTypeKey::FIT,
 		string $cropPositionHorizontal = CropPosition::CENTER,
 		string $cropPositionVertical = CropPosition::CENTER,
 		?string $imageExt = null
 	) {
 		$this->name = $name;
-		$this->maxWidth = $maxWidth;
-		$this->maxHeight = $maxHeight;
+		$this->size = $size;
 		$this->resizeType = $resizeType;
 		$this->cropPositionHorizontal = $cropPositionHorizontal;
 		$this->cropPositionVertical = $cropPositionVertical;
@@ -42,7 +41,7 @@ class ImageRequest {
 	}
 
 	public function getResizedDirName(): string {
-		return "{$this->maxWidth}-{$this->maxHeight}-{$this->resizeType}-{$this->cropPositionHorizontal}-{$this->cropPositionVertical}";
+		return "{$this->size->x}-{$this->size->y}-{$this->resizeType}-{$this->cropPositionHorizontal}-{$this->cropPositionVertical}";
 	}
 
 	public function getResizedFileName(): string {

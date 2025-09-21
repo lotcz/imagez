@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Images\Resizer;
 
-use App\Images\ImageRequest;
-use App\Images\ResizeType;
+use App\Images\Formats\ImageFormats;
+use App\Images\Info\ImageInfo;
+use App\Images\Info\ImageSize;
 use App\Images\Storage\ImageStorage;
 use Psr\Log\LoggerInterface;
 use Throwable;
@@ -16,12 +17,15 @@ class GdImageResizer implements ImageResizer {
 
 	private LoggerInterface $logger;
 
+	private ImageFormats $formats;
+
 	public function __construct(LoggerInterface $logger, ImageStorage $storage) {
 		$this->logger = $logger;
 		$this->imageStorage = $storage;
+		$this->formats = new ImageFormats();
 	}
 
-	public function getResizedImagePath(string $originalPath, ImageRequest $imageRequest): string {
+	public function getResizedImagePath(string $originalPath, ResizeRequest $imageRequest): string {
 		$resizedPath = $this->imageStorage->getResizedPath($imageRequest);
 		if (!$this->imageStorage->fileExists($resizedPath)) {
 			$this->prepareResizedImage($originalPath, $resizedPath, $imageRequest);
@@ -29,49 +33,43 @@ class GdImageResizer implements ImageResizer {
 		return $resizedPath;
 	}
 
-	private function prepareResizedImage(string $originalPath, string $resizedPath, ImageRequest $imageRequest) {
-		$info = @getimagesize($originalPath);
-		if (empty($info)) {
-			$this->logger->error("Image $originalPath has no info");
-			return;
-		}
-		if (!(isset($info[0]) && isset($info[1]) && isset($info['mime']))) {
-			$this->logger->error(sprintf('Image %s has incomplete info: %s.', $originalPath, print_r($info, true)));
+	private function prepareResizedImage(string $originalPath, string $resizedPath, ResizeRequest $resizeRequest) {
+		$info = new ImageInfo($originalPath);
+		if (!$info->hasValidInfo()) {
+			$this->logger->error("Image $originalPath has no valid info!");
 			return;
 		}
 
-		$mime = $info['mime'];
-
-		switch ($mime) {
-			case 'image/png':
-				$image_create_func = 'imagecreatefrompng';
-				$image_save_func = 'imagepng';
-				$new_image_ext = 'png';
-				break;
-
-			case 'image/gif':
-				$image_create_func = 'imagecreatefromgif';
-				$image_save_func = 'imagegif';
-				$new_image_ext = 'gif';
-				break;
-
-			case 'image/webp':
-				$image_create_func = 'imagecreatefromwebp';
-				$image_save_func = 'imagewebp';
-				$new_image_ext = 'webp';
-				break;
-
-			default: //case 'image/jpeg':
-				$image_create_func = 'imagecreatefromjpeg';
-				$image_save_func = 'imagejpeg';
-				$new_image_ext = 'jpg';
-				break;
+		$originalSize = $info->getSize();
+		if ($originalSize->isZero()) {
+			$this->logger->error("Image $originalPath has zero size!");
+			return;
 		}
 
-		$formatDesc = $imageRequest->getResizedPath();
-		$this->logger->info("Resizing image {$imageRequest->name} to $formatDesc");
+		$originalFormat = $this->formats->findByMimeType($info->getMimeType());
+		if ($originalFormat === null) {
+			$originalFormat = $this->formats->findByExtension($info->getExtension());
+		}
+
+		if ($originalFormat === null) {
+			$this->logger->error("Could not detect original format of image $originalPath");
+			return;
+		}
+
+		$targetFormat = $resizeRequest->imageExt === null
+			? $originalFormat
+			: $this->formats->findByExtension($resizeRequest->imageExt);
+
+		if ($targetFormat === null) {
+			$this->logger->error("Could not detect target format $resizeRequest->imageExt for image $originalPath");
+			return;
+		}
+
+		$formatDesc = $resizeRequest->getResizedPath();
+		$this->logger->info("Resizing image {$resizeRequest->name} to $formatDesc");
 
 		try {
+			$image_create_func = $originalFormat->image_create_func;
 			$img = @$image_create_func($originalPath);
 		} catch (Throwable $e) {
 			$message = sprintf('Error when resizing %s to format %s: %s', $originalPath, $formatDesc, $e->getMessage());
@@ -79,57 +77,51 @@ class GdImageResizer implements ImageResizer {
 			return;
 		}
 
-		$originalWidth = intval($info[0]);
-		$originalHeight = intval($info[1]);
+		$srcStart = new ImageSize(0, 0);
+		$srcSize = new ImageSize($originalSize->x, $originalSize->y);
+		$destSize = new ImageSize($resizeRequest->size->x, $resizeRequest->size->y);
 
-		$src_x = 0;
-		$src_y = 0;
-		$src_width = $originalWidth;
-		$src_height = $originalHeight;
-
-		switch ($imageRequest->resizeType) {
+		switch ($resizeRequest->resizeType) {
 			case ResizeType::SCALE:
-				$newWidth = $imageRequest->maxWidth;
-				$newHeight = $imageRequest->maxHeight;
+				// all set already
 				break;
 
 			case ResizeType::CROP:
-				$original_aspect = $originalWidth / $originalHeight;
-				$new_aspect = $imageRequest->maxWidth / $imageRequest->maxHeight;
+				$original_aspect = (float)$originalSize->x / $originalSize->y;
+				$new_aspect = (float)$resizeRequest->size->x / $resizeRequest->size->y;
+
+				// todo: position of crop from request
 
 				if ($original_aspect > $new_aspect) {
-					$src_width = $originalHeight * $new_aspect;
-					$src_x = ($originalWidth - $src_width) / 2;
+					$srcSize->x = intval(round((float)$originalSize->y * $new_aspect));
+					$srcStart->x = intval(round((float)($originalSize->x - $srcSize->x) / 2));
 				} else {
-					$src_height = $originalWidth / $new_aspect;
-					$src_y = ($originalHeight - $src_height) / 2;
+					$srcSize->y = intval(round((float)$originalSize->x / $new_aspect));
+					$srcStart->y = intval(round((float)($originalSize->y - $srcSize->y) / 2));
 				}
-
-				$newWidth = $imageRequest->maxWidth;
-				$newHeight = $imageRequest->maxHeight;
 
 				break;
 
 			case ResizeType::FIT:
 			default:
-				if ($originalWidth > $imageRequest->maxWidth) {
-					$newWidth = $imageRequest->maxWidth;
-					$newHeight = ($originalHeight / $originalWidth) * $imageRequest->maxHeight;
+				if ($originalSize->x > $resizeRequest->size->x) {
+					$destSize->x = $resizeRequest->size->x;
+					$destSize->y = intval(round((float)($originalSize->y / $originalSize->x) * $destSize->x));
 				} else {
-					$newWidth = $originalWidth;
-					$newHeight = $originalHeight;
+					$destSize->x = $originalSize->x;
+					$destSize->y = $originalSize->y;
 				}
 
-				if ($newHeight > $imageRequest->maxHeight) {
-					$newWidth = ($newWidth / $newHeight) * $imageRequest->maxHeight;
-					$newHeight = $imageRequest->maxHeight;
+				if ($destSize->y > $resizeRequest->size->y) {
+					$destSize->y = $resizeRequest->size->y;
+					$destSize->x = intval(round((float)($originalSize->x / $originalSize->y) * $destSize->y));
 				}
 				break;
 		}
 
-		$tmp = @imagecreatetruecolor(intval(round($newWidth)), intval(round($newHeight)));
+		$tmp = @imagecreatetruecolor($destSize->x, $destSize->y);
 
-		switch ($new_image_ext) {
+		switch ($targetFormat->extension) {
 			case "png":
 			case "webp":
 
@@ -165,14 +157,15 @@ class GdImageResizer implements ImageResizer {
 			$img,
 			0,
 			0,
-			intval($src_x),
-			intval($src_y),
-			intval(round($newWidth)),
-			intval(round($newHeight)),
-			intval($src_width),
-			intval($src_height)
+			$srcStart->x,
+			$srcStart->y,
+			$destSize->x,
+			$destSize->y,
+			$srcSize->x,
+			$srcSize->y
 		);
 
+		$image_save_func = $targetFormat->image_save_func;
 		$image_save_func($tmp, $resizedPath);
 
 		@imagedestroy($img);

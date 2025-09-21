@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Images;
+namespace App\Images\Resizer;
 
 class ResizeType {
 

@@ -6,7 +6,7 @@ namespace App\Images\Storage;
 
 use App\Application\Helpers\PathHelper;
 use App\Application\Settings\Settings;
-use App\Images\ImageRequest;
+use App\Images\Resizer\ResizeRequest;
 use Psr\Log\LoggerInterface;
 
 class DiskImageStorage implements ImageStorage {
@@ -37,7 +37,7 @@ class DiskImageStorage implements ImageStorage {
 		return PathHelper::of($this->originalDir, $name);
 	}
 
-	public function getResizedPath(ImageRequest $imageRequest): string {
+	public function getResizedPath(ResizeRequest $imageRequest): string {
 		$resizedDir = PathHelper::of($this->baseDir, $imageRequest->getResizedDirName());
 		if (!file_exists($resizedDir)) {
 			$this->logger->info("Creating resized dir: $resizedDir");
@@ -54,7 +54,7 @@ class DiskImageStorage implements ImageStorage {
 		return $this->fileExists($this->getOriginalPath($name));
 	}
 
-	public function resizeExists(ImageRequest $imageRequest): bool {
+	public function resizeExists(ResizeRequest $imageRequest): bool {
 		return $this->fileExists($this->getResizedPath($imageRequest));
 	}
 
@@ -73,7 +73,7 @@ class DiskImageStorage implements ImageStorage {
 		// TODO: Implement deleteAllResized() method.
 	}
 
-	public function deleteResized(ImageRequest $imageRequest): void {
+	public function deleteResized(ResizeRequest $imageRequest): void {
 		$this->deleteFile($this->getResizedPath($imageRequest));
 	}
 

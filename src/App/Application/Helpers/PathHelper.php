@@ -34,11 +34,11 @@ class PathHelper {
 		return PathHelper::ofParts($strings);
 	}
 
-	public static function getFileExt(string $fileName): string {
-		if (empty($fileName)) return '';
+	public static function getFileExt(string $fileName): ?string {
+		if (empty($fileName)) return null;
 		$parts = explode(".", $fileName);
 		$len = count($parts);
-		if ($len < 2) return '';
+		if ($len < 2) return null;
 		return $parts[$len - 1];
 	}
 
