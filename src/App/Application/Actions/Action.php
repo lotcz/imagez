@@ -9,7 +9,6 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
-use Slim\Psr7\Stream;
 
 abstract class Action {
 
@@ -92,31 +91,6 @@ abstract class Action {
 			return $default;
 		}
 		return intval($this->params[$name]);
-	}
-
-	protected function respondWithImage(string $path, string $name, int $statusCode = 200): Response {
-		if (!file_exists($path)) {
-			return $this->respondWithError(
-				new ActionError(
-					ActionError::RESOURCE_NOT_FOUND,
-					"Image file on path $path not found"
-				),
-				500
-			);
-		}
-
-		$info = finfo_open(FILEINFO_MIME_TYPE);
-		$mimeType = finfo_file($info, $path);
-		finfo_close($info);
-
-		$stream = new Stream(fopen($path, 'rb'));
-
-		return $this->response
-			->withBody($stream)
-			->withStatus($statusCode)
-			->withHeader('Content-Type', $mimeType)
-			->withHeader('Content-Disposition', 'inline; filename="' . basename($name) . '"')
-			->withHeader('Content-Length', filesize($path));
 	}
 
 	protected function respondWithData($data = null, int $statusCode = 200): Response {

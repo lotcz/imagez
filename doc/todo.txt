@@ -1,4 +1,3 @@
 - token protection
 - quality check endpoint
-- allow browser caching
 - implement crop position

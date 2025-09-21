@@ -21,4 +21,11 @@ class CropPosition {
 	 */
 	public const CENTER = 'center';
 
+	public static function all(): array {
+		return [self::START, self::END, self::CENTER];
+	}
+
+	public static function exists(string $position): bool {
+		return in_array($position, self::all());
+	}
 }

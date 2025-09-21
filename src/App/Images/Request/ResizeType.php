@@ -22,4 +22,11 @@ class ResizeType {
 	 */
 	public const FIT = 'fit';
 
+	public static function all(): array {
+		return [self::SCALE, self::CROP, self::FIT];
+	}
+
+	public static function exists(string $type): bool {
+		return in_array($type, self::all());
+	}
 }

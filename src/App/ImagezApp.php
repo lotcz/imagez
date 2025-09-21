@@ -6,7 +6,7 @@ namespace App;
 
 use App\Application\Handlers\HttpErrorHandler;
 use App\Application\Handlers\ShutdownHandler;
-use App\Application\Middleware\SessionMiddleware;
+use App\Application\ResponseEmitter\ImageResponseEmitter;
 use App\Application\ResponseEmitter\ResponseEmitter;
 use App\Application\Settings\Settings;
 use App\Images\Actions\UploadImageAction;
@@ -80,7 +80,6 @@ class ImagezApp {
 
 		// MIDDLEWARE
 
-		$this->app->add(SessionMiddleware::class);
 		$this->app->addRoutingMiddleware();
 		$this->app->addBodyParsingMiddleware();
 
@@ -128,7 +127,9 @@ class ImagezApp {
 		// PROCESS REQUEST
 
 		$response = $this->app->handle($request);
-		$responseEmitter = new ResponseEmitter();
+
+		$contentType = $response->getHeaderLine('Content-Type');
+		$responseEmitter = (str_starts_with($contentType, 'image/')) ? new ImageResponseEmitter() : new ResponseEmitter();
 		$responseEmitter->emit($response);
 	}
 

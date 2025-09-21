@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace App\Images\Request;
 
+use App\Application\Handlers\BadRequestException;
 use App\Application\Helpers\PathHelper;
 use App\Application\Helpers\StringHelper;
-use App\Images\CropPosition;
 use App\Images\Info\ImageSize;
-use App\Images\ResizeTypeKey;
 
 class ResizeRequest {
 
@@ -27,16 +26,29 @@ class ResizeRequest {
 	public function __construct(
 		string $name,
 		ImageSize $size,
-		string $resizeType = ResizeTypeKey::FIT,
+		string $resizeType = ResizeType::FIT,
 		string $cropPositionHorizontal = CropPosition::CENTER,
 		string $cropPositionVertical = CropPosition::CENTER,
 		?string $imageExt = null
 	) {
 		$this->name = $name;
 		$this->size = $size;
+
+		if (!ResizeType::exists($resizeType)) {
+			throw new BadRequestException("Resize type $resizeType does not exist");
+		}
 		$this->resizeType = $resizeType;
+
+		if (!CropPosition::exists($cropPositionHorizontal)) {
+			throw new BadRequestException("Crop position $cropPositionHorizontal does not exist");
+		}
 		$this->cropPositionHorizontal = $cropPositionHorizontal;
+
+		if (!CropPosition::exists($cropPositionVertical)) {
+			throw new BadRequestException("Crop position $cropPositionVertical does not exist");
+		}
 		$this->cropPositionVertical = $cropPositionVertical;
+
 		$this->imageExt = $imageExt;
 	}
 
