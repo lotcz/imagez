@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace App;
 
-use App\Application\Actions\User\ListUsersAction;
-use App\Application\Actions\User\ViewUserAction;
 use App\Application\Handlers\HttpErrorHandler;
 use App\Application\Handlers\ShutdownHandler;
 use App\Application\Middleware\SessionMiddleware;
 use App\Application\ResponseEmitter\ResponseEmitter;
 use App\Application\Settings\Settings;
-use App\Domain\User\UserRepository;
-use App\Infrastructure\Persistence\User\InMemoryUserRepository;
+use App\Images\Actions\UploadImageAction;
+use App\Images\Actions\ViewImageOriginalAction;
+use App\Images\Actions\ViewImageResizedAction;
+use App\Images\Resizer\GdImageResizer;
+use App\Images\Resizer\ImageResizer;
+use App\Images\Storage\DiskImageStorage;
+use App\Images\Storage\ImageStorage;
 use DI\ContainerBuilder;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
@@ -44,8 +47,10 @@ class ImagezApp {
 			$containerBuilder->enableCompilation($this->settings->get('cachePath'));
 		}
 
-		// logger
+		// settings
+		$containerBuilder->addDefinitions([Settings::class => $this->settings]);
 
+		// logger
 		$loggerSettings = $this->settings->get('logger');
 		$loggerPath = $loggerSettings['path'];
 		$loggerName = $loggerSettings['name'];
@@ -58,13 +63,13 @@ class ImagezApp {
 		$handler = new StreamHandler($loggerPath . $loggerName . '.log', $loggerSettings['level']);
 		$logger->pushHandler($handler);
 
-		$containerBuilder->addDefinitions([
-			LoggerInterface::class => $logger
-		]);
+		$containerBuilder->addDefinitions([LoggerInterface::class => $logger]);
 
-		$containerBuilder->addDefinitions([
-			UserRepository::class => \DI\autowire(InMemoryUserRepository::class),
-		]);
+		// resizer
+		$containerBuilder->addDefinitions([ImageResizer::class => \DI\autowire(GdImageResizer::class)]);
+
+		// storage
+		$containerBuilder->addDefinitions([ImageStorage::class => \DI\autowire(DiskImageStorage::class)]);
 
 		$container = $containerBuilder->build();
 
@@ -91,9 +96,10 @@ class ImagezApp {
 			return $response;
 		});
 
-		$this->app->group('/users', function (RouteCollectorProxy $group) {
-			$group->get('', ListUsersAction::class);
-			$group->get('/{id}', ViewUserAction::class);
+		$this->app->group('/images', function (RouteCollectorProxy $group) {
+			$group->post('/upload', UploadImageAction::class);
+			$group->get('/original/{name}', ViewImageOriginalAction::class);
+			$group->get('/resized/{name}', ViewImageResizedAction::class);
 		});
 	}
 

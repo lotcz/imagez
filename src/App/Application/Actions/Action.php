@@ -4,89 +4,89 @@ declare(strict_types=1);
 
 namespace App\Application\Actions;
 
-use App\Domain\DomainException\DomainRecordNotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
-use Slim\Exception\HttpNotFoundException;
+use Slim\Psr7\Stream;
 
-abstract class Action
-{
-    protected LoggerInterface $logger;
+abstract class Action {
 
-    protected Request $request;
+	protected LoggerInterface $logger;
 
-    protected Response $response;
+	protected Request $request;
 
-    protected array $args;
+	protected Response $response;
 
-    public function __construct(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
+	protected array $args;
 
-    /**
-     * @throws HttpNotFoundException
-     * @throws HttpBadRequestException
-     */
-    public function __invoke(Request $request, Response $response, array $args): Response
-    {
-        $this->request = $request;
-        $this->response = $response;
-        $this->args = $args;
+	public function __construct(LoggerInterface $logger) {
+		$this->logger = $logger;
+	}
 
-        try {
-            return $this->action();
-        } catch (DomainRecordNotFoundException $e) {
-            throw new HttpNotFoundException($this->request, $e->getMessage());
-        }
-    }
+	public function __invoke(Request $request, Response $response, array $args): Response {
+		$this->request = $request;
+		$this->response = $response;
+		$this->args = $args;
 
-    /**
-     * @throws DomainRecordNotFoundException
-     * @throws HttpBadRequestException
-     */
-    abstract protected function action(): Response;
+		return $this->action();
+	}
 
-    /**
-     * @return array|object
-     */
-    protected function getFormData()
-    {
-        return $this->request->getParsedBody();
-    }
+	abstract protected function action(): Response;
 
-    /**
-     * @return mixed
-     * @throws HttpBadRequestException
-     */
-    protected function resolveArg(string $name)
-    {
-        if (!isset($this->args[$name])) {
-            throw new HttpBadRequestException($this->request, "Could not resolve argument `{$name}`.");
-        }
+	protected function getFormData() {
+		return $this->request->getParsedBody();
+	}
 
-        return $this->args[$name];
-    }
+	protected function resolveArg(string $name) {
+		if (!isset($this->args[$name])) {
+			throw new HttpBadRequestException($this->request, "Could not resolve argument `{$name}`.");
+		}
 
-    /**
-     * @param array|object|null $data
-     */
-    protected function respondWithData($data = null, int $statusCode = 200): Response
-    {
-        $payload = new ActionPayload($statusCode, $data);
+		return $this->args[$name];
+	}
 
-        return $this->respond($payload);
-    }
+	protected function respondWithImage(string $path, string $name, int $statusCode = 200): Response {
+		if (!file_exists($path)) {
+			return $this->respondWithError(
+				new ActionError(
+					ActionError::RESOURCE_NOT_FOUND,
+					"Image file on path $path not found"
+				),
+				500
+			);
+		}
 
-    protected function respond(ActionPayload $payload): Response
-    {
-        $json = json_encode($payload, JSON_PRETTY_PRINT);
-        $this->response->getBody()->write($json);
+		$info = finfo_open(FILEINFO_MIME_TYPE);
+		$mimeType = finfo_file($info, $path);
+		finfo_close($info);
 
-        return $this->response
-                    ->withHeader('Content-Type', 'application/json')
-                    ->withStatus($payload->getStatusCode());
-    }
+		$stream = new Stream(fopen($path, 'rb'));
+
+		return $this->response
+			->withBody($stream)
+			->withStatus($statusCode)
+			->withHeader('Content-Type', $mimeType)
+			->withHeader('Content-Disposition', 'inline; filename="' . basename($name) . '"')
+			->withHeader('Content-Length', filesize($path));
+	}
+
+	protected function respondWithData($data = null, int $statusCode = 200): Response {
+		$payload = new ActionPayload($statusCode, $data);
+		return $this->respond($payload);
+	}
+
+	protected function respondWithError(ActionError $error, int $statusCode = 400): Response {
+		$payload = new ActionPayload($statusCode, null, $error);
+		return $this->respond($payload);
+	}
+
+	protected function respond(ActionPayload $payload): Response {
+		$json = json_encode($payload, JSON_PRETTY_PRINT);
+		$this->response->getBody()->write($json);
+
+		return $this->response
+			->withHeader('Content-Type', 'application/json')
+			->withStatus($payload->getStatusCode());
+	}
 }
