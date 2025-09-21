@@ -68,8 +68,8 @@ class GdImageResizer implements ImageResizer {
 				break;
 		}
 
-		$formatDesc = $imageRequest->getResizedDirName();
-		$this->logger->info("Resizing image $originalPath to $formatDesc");
+		$formatDesc = $imageRequest->getResizedPath();
+		$this->logger->info("Resizing image {$imageRequest->name} to $formatDesc");
 
 		try {
 			$img = @$image_create_func($originalPath);

@@ -10,7 +10,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 class ViewImageOriginalAction extends ImageAction {
 
 	protected function action(): Response {
-		$name = $this->resolveArg('name');
+		$name = $this->requireArg('name');
 		$path = $this->imageStorage->getOriginalPath($name);
 
 		if (!$this->imageStorage->fileExists($path)) {

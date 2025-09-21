@@ -49,4 +49,8 @@ class ImageRequest {
 		return StringHelper::isBlank($this->imageExt) ? $this->name : PathHelper::getFileBase($this->name) . '.' . $this->imageExt;
 	}
 
+	public function getResizedPath(): string {
+		return PathHelper::of($this->getResizedDirName(), $this->getResizedFileName());
+	}
+
 }

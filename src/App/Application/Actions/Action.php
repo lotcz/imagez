@@ -23,6 +23,8 @@ abstract class Action {
 
 	protected array $args;
 
+	protected array $params;
+
 	public function __construct(LoggerInterface $logger, Settings $settings) {
 		$this->logger = $logger;
 		$this->settings = $settings;
@@ -32,6 +34,7 @@ abstract class Action {
 		$this->request = $request;
 		$this->response = $response;
 		$this->args = $args;
+		$this->params = $request->getQueryParams();
 
 		return $this->action();
 	}
@@ -42,12 +45,53 @@ abstract class Action {
 		return $this->request->getParsedBody();
 	}
 
-	protected function resolveArg(string $name) {
+	protected function requireArg(string $name): string {
 		if (!isset($this->args[$name])) {
 			throw new HttpBadRequestException($this->request, "Could not resolve argument `{$name}`.");
 		}
-
 		return $this->args[$name];
+	}
+
+	protected function getArg(string $name, string $default): string {
+		if (!isset($this->args[$name])) {
+			return $default;
+		}
+		return $this->args[$name];
+	}
+
+	protected function getIntArg(string $name, int $default): int {
+		if (!isset($this->args[$name])) {
+			return $default;
+		}
+		return intval($this->args[$name]);
+	}
+
+	protected function requireQueryParam(string $name): string {
+		if (!isset($this->params[$name])) {
+			throw new HttpBadRequestException($this->request, "Could not resolve query parameter `{$name}`.");
+		}
+		return $this->params[$name];
+	}
+
+	protected function getQueryParam(string $name, string $default): string {
+		if (!isset($this->params[$name])) {
+			return $default;
+		}
+		return $this->params[$name];
+	}
+
+	protected function requireIntQueryParam(string $name): int {
+		if (!isset($this->params[$name])) {
+			throw new HttpBadRequestException($this->request, "Could not resolve query parameter `{$name}`.");
+		}
+		return intval($this->params[$name]);
+	}
+
+	protected function getIntQueryParam(string $name, int $default): int {
+		if (!isset($this->params[$name])) {
+			return $default;
+		}
+		return intval($this->params[$name]);
 	}
 
 	protected function respondWithImage(string $path, string $name, int $statusCode = 200): Response {

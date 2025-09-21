@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace App\Images\Actions;
 
 use App\Application\Actions\ActionError;
+use App\Images\CropPosition;
 use App\Images\ImageRequest;
+use App\Images\ResizeType;
 use Psr\Http\Message\ResponseInterface as Response;
 
 class ViewImageResizedAction extends ImageAction {
 
 	protected function action(): Response {
-		$name = $this->resolveArg('name');
+		$name = $this->requireArg('name');
 		$originalPath = $this->imageStorage->getOriginalPath($name);
 
 		if (!$this->imageStorage->fileExists($originalPath)) {
@@ -24,7 +26,16 @@ class ViewImageResizedAction extends ImageAction {
 			);
 		}
 
-		$path = $this->imageResizer->getResizedImagePath($originalPath, new ImageRequest($name, 100, 100));
+		$imageRequest = new ImageRequest(
+			$name,
+			$this->requireIntQueryParam('width'),
+			$this->requireIntQueryParam('height'),
+			$this->getQueryParam('type', ResizeType::FIT),
+			$this->getQueryParam('horiz', CropPosition::CENTER),
+			$this->getQueryParam('vert', CropPosition::CENTER)
+		);
+
+		$path = $this->imageResizer->getResizedImagePath($originalPath, $imageRequest);
 		return $this->respondWithImage($path, $name);
 	}
 }
