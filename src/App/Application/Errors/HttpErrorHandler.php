@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Handlers;
+namespace App\Application\Errors;
 
 use App\Application\Actions\ActionError;
 use App\Application\Actions\ActionPayload;
@@ -25,6 +25,10 @@ class HttpErrorHandler extends SlimErrorHandler {
 		if ($exception instanceof BadRequestException) {
 			$statusCode = 400;
 			$error->setType(ActionError::BAD_REQUEST);
+			$error->setDescription($exception->getMessage());
+		} else if ($exception instanceof ForbiddenException) {
+			$statusCode = 401;
+			$error->setType(ActionError::VERIFICATION_ERROR);
 			$error->setDescription($exception->getMessage());
 		} else if ($exception instanceof Throwable && $this->displayErrorDetails) {
 			$error->setDescription($exception->getMessage());

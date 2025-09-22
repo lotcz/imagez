@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App;
 
-use App\Application\Handlers\HttpErrorHandler;
-use App\Application\Handlers\ShutdownHandler;
+use App\Application\Errors\HttpErrorHandler;
+use App\Application\Errors\ShutdownHandler;
 use App\Application\ResponseEmitter\ImageResponseEmitter;
 use App\Application\ResponseEmitter\ResponseEmitter;
 use App\Application\Settings\Settings;

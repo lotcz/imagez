@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Images\Resizer;
 
+use App\Application\Helpers\StringHelper;
 use App\Images\Formats\ImageFormats;
 use App\Images\Info\ImageInfo;
 use App\Images\Info\ImageSize;
@@ -58,10 +59,9 @@ class GdImageResizer implements ImageResizer {
 			return;
 		}
 
-		$targetFormat = $resizeRequest->imageExt === null
+		$targetFormat = StringHelper::isBlank($resizeRequest->imageExt)
 			? $originalFormat
 			: $this->formats->findByExtension($resizeRequest->imageExt);
-
 		if ($targetFormat === null) {
 			$this->logger->error("Could not detect target format $resizeRequest->imageExt for image $originalPath");
 			return;

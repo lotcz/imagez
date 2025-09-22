@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Images\Actions;
 
 use App\Application\Actions\ActionError;
+use App\Application\Errors\ForbiddenException;
+use App\Application\Helpers\StringHelper;
 use App\Images\Info\ImageSize;
-use App\Images\Request\CropPosition;
 use App\Images\Request\ResizeRequest;
-use App\Images\Request\ResizeType;
 use Psr\Http\Message\ResponseInterface as Response;
 
 class ViewImageResizedAction extends ImageAction {
@@ -23,23 +23,41 @@ class ViewImageResizedAction extends ImageAction {
 					ActionError::RESOURCE_NOT_FOUND,
 					"Image $name not found"
 				),
-				500
+				404
 			);
 		}
 
-		$imageRequest = new ResizeRequest(
+		$resizeRequest = new ResizeRequest(
 			$name,
 			new ImageSize(
 				$this->requireIntQueryParam('width'),
 				$this->requireIntQueryParam('height')
 			),
-			$this->getQueryParam('type', ResizeType::FIT),
-			$this->getQueryParam('horiz', CropPosition::CENTER),
-			$this->getQueryParam('vert', CropPosition::CENTER),
+			$this->requireQueryParam('type'),
 			$this->getQueryParam('ext')
 		);
 
-		$path = $this->imageResizer->getResizedImagePath($originalPath, $imageRequest);
+		$securityToken = $this->settings->get('securityToken');
+		// validate token if set
+		if (StringHelper::notBlank($securityToken)) {
+			$userToken = $this->requireQueryParam('token');
+			$rawToken = $resizeRequest->getSecurityRawValue($securityToken);
+
+			// todo: hash
+			$hash = $this->settings->get('debugMode') ? $rawToken : '';
+
+			if ($hash !== $userToken) {
+				throw new ForbiddenException("Secure token invalid");
+			}
+		}
+
+		// set default extension if not explicitly requested and settings exists
+		if (StringHelper::isBlank($resizeRequest->imageExt)
+			&& StringHelper::notBlank($this->settings->get('defaultResizedExt'))) {
+			$resizeRequest->imageExt = $this->settings->get('defaultResizedExt');
+		}
+
+		$path = $this->imageResizer->getResizedImagePath($originalPath, $resizeRequest);
 		return $this->respondWithImage($path, $name);
 	}
 }

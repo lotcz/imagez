@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Images\Request;
 
-use App\Application\Handlers\BadRequestException;
+use App\Application\Errors\BadRequestException;
 use App\Application\Helpers\PathHelper;
 use App\Application\Helpers\StringHelper;
 use App\Images\Info\ImageSize;
@@ -17,18 +17,12 @@ class ResizeRequest {
 
 	public string $resizeType;
 
-	public string $cropPositionHorizontal;
-
-	public string $cropPositionVertical;
-
 	public ?string $imageExt;
 
 	public function __construct(
 		string $name,
 		ImageSize $size,
-		string $resizeType = ResizeType::FIT,
-		string $cropPositionHorizontal = CropPosition::CENTER,
-		string $cropPositionVertical = CropPosition::CENTER,
+		string $resizeType,
 		?string $imageExt = null
 	) {
 		$this->name = $name;
@@ -39,21 +33,11 @@ class ResizeRequest {
 		}
 		$this->resizeType = $resizeType;
 
-		if (!CropPosition::exists($cropPositionHorizontal)) {
-			throw new BadRequestException("Crop position $cropPositionHorizontal does not exist");
-		}
-		$this->cropPositionHorizontal = $cropPositionHorizontal;
-
-		if (!CropPosition::exists($cropPositionVertical)) {
-			throw new BadRequestException("Crop position $cropPositionVertical does not exist");
-		}
-		$this->cropPositionVertical = $cropPositionVertical;
-
 		$this->imageExt = $imageExt;
 	}
 
 	public function getResizedDirName(): string {
-		return "{$this->size->x}-{$this->size->y}-{$this->resizeType}-{$this->cropPositionHorizontal}-{$this->cropPositionVertical}";
+		return "{$this->size->x}-{$this->size->y}-{$this->resizeType}";
 	}
 
 	public function getResizedFileName(): string {
@@ -62,6 +46,14 @@ class ResizeRequest {
 
 	public function getResizedPath(): string {
 		return PathHelper::of($this->getResizedDirName(), $this->getResizedFileName());
+	}
+
+	public function getSecurityRawValue(string $securityToken): string {
+		$base = "$securityToken-{$this->name}-{$this->getResizedDirName()}";
+		if (!StringHelper::isBlank($this->imageExt)) {
+			$base .= "-{$this->imageExt}";
+		}
+		return $base;
 	}
 
 }

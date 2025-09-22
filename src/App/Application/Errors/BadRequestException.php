@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Handlers;
+namespace App\Application\Errors;
 
 use Exception;
 
