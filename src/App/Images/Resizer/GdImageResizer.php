@@ -6,8 +6,8 @@ namespace App\Images\Resizer;
 
 use App\Application\Helpers\StringHelper;
 use App\Images\Formats\ImageFormats;
+use App\Images\Info\ImageDimensions;
 use App\Images\Info\ImageInfo;
-use App\Images\Info\ImageSize;
 use App\Images\Request\ResizeRequest;
 use App\Images\Request\ResizeType;
 use App\Images\Storage\ImageStorage;
@@ -38,12 +38,8 @@ class GdImageResizer implements ImageResizer {
 
 	private function prepareResizedImage(string $originalPath, string $resizedPath, ResizeRequest $resizeRequest) {
 		$info = new ImageInfo($originalPath);
-		if (!$info->hasValidInfo()) {
-			$this->logger->error("Image $originalPath has no valid info!");
-			return;
-		}
 
-		$originalSize = $info->getSize();
+		$originalSize = $info->getDimensions();
 		if ($originalSize->isZero()) {
 			$this->logger->error("Image $originalPath has zero size!");
 			return;
@@ -79,9 +75,9 @@ class GdImageResizer implements ImageResizer {
 			return;
 		}
 
-		$srcStart = new ImageSize(0, 0);
-		$srcSize = new ImageSize($originalSize->x, $originalSize->y);
-		$destSize = new ImageSize($resizeRequest->size->x, $resizeRequest->size->y);
+		$srcStart = new ImageDimensions(0, 0);
+		$srcSize = new ImageDimensions($originalSize->x, $originalSize->y);
+		$destSize = new ImageDimensions($resizeRequest->size->x, $resizeRequest->size->y);
 
 		switch ($resizeRequest->resizeType) {
 			case ResizeType::SCALE:

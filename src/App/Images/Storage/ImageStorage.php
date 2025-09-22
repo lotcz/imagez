@@ -23,4 +23,6 @@ interface ImageStorage {
 	public function deleteAllResized(string $name): void;
 
 	public function deleteResized(ResizeRequest $imageRequest): void;
+
+	public function getHealthPayload(string $name): array;
 }

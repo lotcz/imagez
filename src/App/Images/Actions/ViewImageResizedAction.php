@@ -8,7 +8,7 @@ use App\Application\Actions\ActionError;
 use App\Application\Errors\ForbiddenException;
 use App\Application\Helpers\HashHelper;
 use App\Application\Helpers\StringHelper;
-use App\Images\Info\ImageSize;
+use App\Images\Info\ImageDimensions;
 use App\Images\Request\ResizeRequest;
 use Psr\Http\Message\ResponseInterface as Response;
 
@@ -30,7 +30,7 @@ class ViewImageResizedAction extends ImageAction {
 
 		$resizeRequest = new ResizeRequest(
 			$name,
-			new ImageSize(
+			new ImageDimensions(
 				$this->requireIntQueryParam('width'),
 				$this->requireIntQueryParam('height')
 			),

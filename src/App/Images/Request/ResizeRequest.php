@@ -7,13 +7,13 @@ namespace App\Images\Request;
 use App\Application\Errors\BadRequestException;
 use App\Application\Helpers\PathHelper;
 use App\Application\Helpers\StringHelper;
-use App\Images\Info\ImageSize;
+use App\Images\Info\ImageDimensions;
 
 class ResizeRequest {
 
 	public string $name;
 
-	public ImageSize $size;
+	public ImageDimensions $size;
 
 	public string $resizeType;
 
@@ -21,7 +21,7 @@ class ResizeRequest {
 
 	public function __construct(
 		string $name,
-		ImageSize $size,
+		ImageDimensions $size,
 		string $resizeType,
 		?string $imageExt = null
 	) {
@@ -33,7 +33,7 @@ class ResizeRequest {
 		}
 		$this->resizeType = $resizeType;
 
-		$this->imageExt = $imageExt;
+		$this->imageExt = strtolower($imageExt);
 	}
 
 	public function getResizedDirName(): string {

@@ -10,6 +10,7 @@ use App\Application\ResponseEmitter\ImageResponseEmitter;
 use App\Application\ResponseEmitter\ResponseEmitter;
 use App\Application\Settings\Settings;
 use App\Images\Actions\UploadImageAction;
+use App\Images\Actions\ViewImageHealthAction;
 use App\Images\Actions\ViewImageOriginalAction;
 use App\Images\Actions\ViewImageResizedAction;
 use App\Images\Resizer\GdImageResizer;
@@ -97,6 +98,7 @@ class ImagezApp {
 
 		$this->app->group('/images', function (RouteCollectorProxy $group) {
 			$group->post('/upload', UploadImageAction::class);
+			$group->get('/health/{name}', ViewImageHealthAction::class);
 			$group->get('/original/{name}', ViewImageOriginalAction::class);
 			$group->get('/resized/{name}', ViewImageResizedAction::class);
 		});

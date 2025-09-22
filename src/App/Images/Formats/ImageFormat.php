@@ -31,6 +31,7 @@ class ImageFormat {
 	}
 
 	public function hasExtension(string $ext) {
+		$ext = strtolower($ext);
 		return $this->extension == $ext || in_array($ext, $this->altExtensions);
 	}
 

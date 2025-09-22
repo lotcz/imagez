@@ -10,27 +10,41 @@ class ImageInfo {
 
 	private string $path;
 
-	private ?array $info;
+	private ?array $info = null;
 
 	public function __construct(string $filePath) {
 		$this->path = $filePath;
-		$this->info = @getimagesize($filePath);
 	}
 
-	public function hasValidInfo(): bool {
-		return is_array($this->info) && isset($this->info[0]) && isset($this->info[1]);
+	public function getInfo(): array {
+		if ($this->info === null) {
+			$this->info = @getimagesize($this->path);
+			if ($this->info === null) {
+				$this->info = [];
+			}
+		}
+		return $this->info;
 	}
 
-	public function getSize(): ImageSize {
-		return new ImageSize(intval($this->info[0]), intval($this->info[1]));
+	public function getDimensions(): ImageDimensions {
+		$info = $this->getInfo();
+		if (!(isset($info[0]) && isset($info[1]))) {
+			return new ImageDimensions(0, 0);
+		}
+		return new ImageDimensions(intval($info[0]), intval($info[1]));
 	}
 
 	public function getMimeType(): ?string {
-		return isset($this->info['mime']) ? $this->info['mime'] : null;
+		$info = $this->getInfo();
+		return isset($info['mime']) ? $info['mime'] : null;
 	}
 
 	public function getExtension(): ?string {
 		return PathHelper::getFileExt($this->path);
+	}
+
+	public function getFileSize(): int {
+		return filesize($this->path);
 	}
 
 }
