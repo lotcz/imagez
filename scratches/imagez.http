@@ -8,6 +8,6 @@ GET {{host}}/images/health/e6a8d25da0b679ce3eedc18ac7302036.jpg
 ### get original
 GET {{host}}/images/original/e6a8d25da0b679ce3eedc18ac7302036.jpg
 
-### get resized
+### PROD get resized
 GET {{host}}/images/resized/e6a8d25da0b679ce3eedc18ac7302036.jpg?type=crop&width=150&height=150&
     token=5dec611e
