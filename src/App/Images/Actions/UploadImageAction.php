@@ -11,6 +11,8 @@ use Psr\Http\Message\ResponseInterface as Response;
 class UploadImageAction extends ImageAction {
 
 	protected function action(): Response {
+		$this->checkSecureToken();
+		
 		/** @var \Psr\Http\Message\UploadedFileInterface[] $uploadedFiles */
 		$uploadedFiles = $this->request->getUploadedFiles();
 
@@ -51,10 +53,7 @@ class UploadImageAction extends ImageAction {
 		$path = $this->imageStorage->getOriginalPath($filename);
 		$uploadedFile->moveTo($path);
 
-		return $this->respondWithData(
-			[
-				'name' => $filename
-			]
-		);
+		$health = $this->imageStorage->getHealthPayload($filename);
+		return $this->respondWithData($health);
 	}
 }

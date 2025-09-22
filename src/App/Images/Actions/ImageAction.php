@@ -7,6 +7,7 @@ namespace App\Images\Actions;
 use App\Application\Actions\Action;
 use App\Application\Actions\ActionError;
 use App\Application\Settings\Settings;
+use App\Images\Formats\ImageFormats;
 use App\Images\Resizer\ImageResizer;
 use App\Images\Storage\ImageStorage;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -15,12 +16,21 @@ use Slim\Psr7\Stream;
 
 abstract class ImageAction extends Action {
 
+	protected ImageFormats $formats;
+
 	protected ImageResizer $imageResizer;
 
 	protected ImageStorage $imageStorage;
 
-	public function __construct(LoggerInterface $logger, Settings $settings, ImageResizer $imageResizer, ImageStorage $imageStorage) {
+	public function __construct(
+		LoggerInterface $logger,
+		Settings $settings,
+		ImageFormats $formats,
+		ImageResizer $imageResizer,
+		ImageStorage $imageStorage
+	) {
 		parent::__construct($logger, $settings);
+		$this->formats = $formats;
 		$this->imageResizer = $imageResizer;
 		$this->imageStorage = $imageStorage;
 	}
@@ -49,5 +59,5 @@ abstract class ImageAction extends Action {
 			->withHeader('Content-Disposition', 'inline; filename="' . basename($name) . '"')
 			->withHeader('Content-Length', filesize($path));
 	}
-	
+
 }

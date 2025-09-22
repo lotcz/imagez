@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Images\Info;
 
 use App\Application\Helpers\PathHelper;
+use Exception;
 
 class ImageInfo {
 
@@ -16,7 +17,14 @@ class ImageInfo {
 		$this->path = $filePath;
 	}
 
+	public function exists(): bool {
+		return file_exists($this->path);
+	}
+
 	public function getInfo(): array {
+		if (!$this->exists()) {
+			throw new Exception("Image $this->path does not exist");
+		}
 		if ($this->info === null) {
 			$this->info = @getimagesize($this->path);
 			if ($this->info === null) {

@@ -22,10 +22,10 @@ class GdImageResizer implements ImageResizer {
 
 	private ImageFormats $formats;
 
-	public function __construct(LoggerInterface $logger, ImageStorage $storage) {
+	public function __construct(LoggerInterface $logger, ImageStorage $storage, ImageFormats $formats) {
 		$this->logger = $logger;
 		$this->imageStorage = $storage;
-		$this->formats = new ImageFormats();
+		$this->formats = $formats;
 	}
 
 	public function getResizedImagePath(string $originalPath, ResizeRequest $imageRequest): string {
@@ -87,8 +87,6 @@ class GdImageResizer implements ImageResizer {
 			case ResizeType::CROP:
 				$original_aspect = (float)$originalSize->x / $originalSize->y;
 				$new_aspect = (float)$resizeRequest->size->x / $resizeRequest->size->y;
-
-				// todo: position of crop from request
 
 				if ($original_aspect > $new_aspect) {
 					$srcSize->x = intval(round((float)$originalSize->y * $new_aspect));

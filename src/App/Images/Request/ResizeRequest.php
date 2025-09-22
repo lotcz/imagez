@@ -33,7 +33,7 @@ class ResizeRequest {
 		}
 		$this->resizeType = $resizeType;
 
-		$this->imageExt = strtolower($imageExt);
+		$this->imageExt = empty($imageExt) ? null : strtolower($imageExt);
 	}
 
 	public function getResizedDirName(): string {

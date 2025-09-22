@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\Actions;
 
 use App\Application\Errors\BadRequestException;
+use App\Application\Errors\ForbiddenException;
 use App\Application\Settings\Settings;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -42,6 +43,14 @@ abstract class Action {
 
 	protected function getFormData() {
 		return $this->request->getParsedBody();
+	}
+
+	protected function checkSecureToken() {
+		$securityToken = $this->settings->get('securityToken');
+		$userToken = $this->requireQueryParam('token');
+		if ($userToken !== $securityToken) {
+			throw new ForbiddenException("Secure token invalid");
+		}
 	}
 
 	protected function requireArg(string $name): string {

@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace App;
 
+use App\Application\Actions\StatusAction;
 use App\Application\Errors\HttpErrorHandler;
 use App\Application\Errors\ShutdownHandler;
 use App\Application\ResponseEmitter\ImageResponseEmitter;
 use App\Application\ResponseEmitter\ResponseEmitter;
 use App\Application\Settings\Settings;
 use App\Images\Actions\UploadImageAction;
+use App\Images\Actions\UploadImageFromUrlAction;
 use App\Images\Actions\ViewImageHealthAction;
 use App\Images\Actions\ViewImageOriginalAction;
 use App\Images\Actions\ViewImageResizedAction;
+use App\Images\Formats\ImageFormats;
 use App\Images\Resizer\GdImageResizer;
 use App\Images\Resizer\ImageResizer;
 use App\Images\Storage\DiskImageStorage;
@@ -45,7 +48,7 @@ class ImagezApp {
 
 		$containerBuilder = new ContainerBuilder();
 		if ($this->settings->get('compileContainer')) {
-			$containerBuilder->enableCompilation($this->settings->get('cachePath'));
+			$containerBuilder->enableCompilation($this->settings->get('tmpPath'));
 		}
 
 		// settings
@@ -66,10 +69,9 @@ class ImagezApp {
 
 		$containerBuilder->addDefinitions([LoggerInterface::class => $logger]);
 
-		// resizer
+		// more services
+		$containerBuilder->addDefinitions([ImageFormats::class => new ImageFormats()]);
 		$containerBuilder->addDefinitions([ImageResizer::class => \DI\autowire(GdImageResizer::class)]);
-
-		// storage
 		$containerBuilder->addDefinitions([ImageStorage::class => \DI\autowire(DiskImageStorage::class)]);
 
 		$container = $containerBuilder->build();
@@ -91,13 +93,11 @@ class ImagezApp {
 			return $response;
 		});
 
-		$this->app->get('/', function (Request $request, Response $response) {
-			$response->getBody()->write('Hello world!');
-			return $response;
-		});
+		$this->app->get('/', StatusAction::class);
 
 		$this->app->group('/images', function (RouteCollectorProxy $group) {
 			$group->post('/upload', UploadImageAction::class);
+			$group->post('/upload-url', UploadImageFromUrlAction::class);
 			$group->get('/health/{name}', ViewImageHealthAction::class);
 			$group->get('/original/{name}', ViewImageOriginalAction::class);
 			$group->get('/resized/{name}', ViewImageResizedAction::class);

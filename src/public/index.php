@@ -9,9 +9,11 @@ require __DIR__ . '/../vendor/autoload.php';
 
 $settings = new ArraySettings(
 	[
+		'version' => '1.0.0',
 		'debugMode' => true,
 		'compileContainer' => false,
-		'cachePath' => __DIR__ . '/../var/cache/',
+		'tmpPath' => __DIR__ . '/../var/tmp/',
+		'imageStorePath' => __DIR__ . '/../var/image-store',
 		'maxImageSizeBytes' => 1024 * 1024 * 10,
 		'defaultResizedExt' => 'webp',
 		'securityToken' => 'some-secure-value',

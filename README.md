@@ -10,9 +10,25 @@ then you can run:
 
 ## Usage
 
+### Upload from URL
+
+Use post and include secret token:
+
+    POST http://localhost:8080/images/upload-url?url=https://www.pragmoon.cz/uploaded_images/thumb/laura-a-jeji-tygri.jpg&token=some-secure-value
+
+### View original image
+
 To get original image, only image name is needed:
 
     http://localhost:8080/images/original/test.png
+
+### Get image health
+
+To get image health JSON, only image name is needed:
+
+    http://localhost:8080/images/health/test.png
+
+### View resized image
 
 To get resized image, you must provide image size and optionally other params
 
@@ -21,13 +37,13 @@ To get resized image, you must provide image size and optionally other params
 - type (required, desired resize type - fit, crop or scale)
 - ext (optional, desired image extension - jpg, png, webp or gif)
 
-### Unsecured
+#### Unsecured
 
 This will work only if securityToken is not configured on the server:
 
     http://localhost:8080/images/resized/test.png?width=450&height=400&type=crop&ext=webp
 
-### Debug mode
+#### Debug mode
 
 To get resized image securely you will need a validation token that is created from params (ext is optional, depending
 on if you used the param):
@@ -38,7 +54,7 @@ If the security token is `secret` then you can request image from production ser
 
     http://localhost:8080/images/resized/test.png?width=450&height=400&type=crop&ext=webp&token=secret-test.png-450-400-crop-webp
 
-### Production
+#### Production
 
 You will need to hash verification token first (CRC32 hash in hex chars):
 

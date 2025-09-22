@@ -21,7 +21,7 @@ class DiskImageStorage implements ImageStorage {
 	public function __construct(LoggerInterface $logger, Settings $settings) {
 		$this->logger = $logger;
 
-		$this->baseDir = PathHelper::of($settings->get('cachePath'), 'image-store');
+		$this->baseDir = $settings->get('imageStorePath');
 		if (!file_exists($this->baseDir)) {
 			$this->logger->info("Creating base dir: $this->baseDir");
 			mkdir($this->baseDir, 0777, true);
@@ -32,6 +32,15 @@ class DiskImageStorage implements ImageStorage {
 			$this->logger->info("Creating original dir: $this->originalDir");
 			mkdir($this->originalDir, 0777, true);
 		}
+	}
+
+	public function obtainNewName(string $ext): string {
+		$basename = bin2hex(random_bytes(12));
+		$name = $basename . '.' . $ext;
+		if ($this->originalExists($name)) {
+			return $this->obtainNewName($ext);
+		}
+		return $name;
 	}
 
 	public function getOriginalPath(string $name): string {
@@ -83,6 +92,7 @@ class DiskImageStorage implements ImageStorage {
 		$info = new ImageInfo($path);
 		$size = $info->getDimensions();
 		return [
+			'name' => $name,
 			'size' => $info->getFileSize(),
 			'width' => $size->x,
 			'height' => $size->y,

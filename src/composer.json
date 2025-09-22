@@ -24,7 +24,8 @@
         "slim/slim": "^4.10",
 		"ext-json": "*",
 		"ext-fileinfo": "*",
-		"ext-gd": "*"
+		"ext-gd": "*",
+		"ext-curl": "*"
 	},
     "require-dev": {
 
