@@ -9,7 +9,8 @@ require __DIR__ . '/../vendor/autoload.php';
 
 $settings = new ArraySettings(
 	[
-		'debugMode' => true,
+		'debugMode' => false,
+		'compileContainer' => false,
 		'cachePath' => __DIR__ . '/../var/cache/',
 		'maxImageSizeBytes' => 1024 * 1024 * 10,
 		'defaultResizedExt' => 'webp',

@@ -43,7 +43,7 @@ class ImagezApp {
 		// DI CONTAINER
 
 		$containerBuilder = new ContainerBuilder();
-		if (!$this->debugMode) {
+		if ($this->settings->get('compileContainer')) {
 			$containerBuilder->enableCompilation($this->settings->get('cachePath'));
 		}
 

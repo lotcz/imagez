@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Application\Actions;
 
+use App\Application\Errors\BadRequestException;
 use App\Application\Settings\Settings;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
-use Slim\Exception\HttpBadRequestException;
 
 abstract class Action {
 
@@ -46,7 +46,7 @@ abstract class Action {
 
 	protected function requireArg(string $name): string {
 		if (!isset($this->args[$name])) {
-			throw new HttpBadRequestException($this->request, "Could not resolve argument `{$name}`.");
+			throw new BadRequestException("Could not resolve path argument `{$name}`.");
 		}
 		return $this->args[$name];
 	}
@@ -67,7 +67,7 @@ abstract class Action {
 
 	protected function requireQueryParam(string $name): string {
 		if (!isset($this->params[$name])) {
-			throw new HttpBadRequestException($this->request, "Could not resolve query parameter `{$name}`.");
+			throw new BadRequestException("Required query parameter `{$name}` not provided");
 		}
 		return $this->params[$name];
 	}
@@ -81,7 +81,7 @@ abstract class Action {
 
 	protected function requireIntQueryParam(string $name): int {
 		if (!isset($this->params[$name])) {
-			throw new HttpBadRequestException($this->request, "Could not resolve query parameter `{$name}`.");
+			throw new BadRequestException("Required query parameter `{$name}` not provided");
 		}
 		return intval($this->params[$name]);
 	}
