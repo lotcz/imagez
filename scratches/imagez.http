@@ -1,13 +1,13 @@
 ### upload from url
-POST http://localhost:8080/images/upload-url?url=https://www.pragmoon.cz/uploaded_images/thumb/laura-a-jeji-tygri.jpg&
-    token=some-secure-value
+POST {{host}}/images/upload-url?url=https://www.pragmoon.cz/uploaded_images/thumb/laura-a-jeji-tygri.jpg&
+    token={{securityToken}}
 
 ### get health
-GET http://localhost:8080/images/health/e6a8d25da0b679ce3eedc18ac7302036.jpg
+GET {{host}}/images/health/e6a8d25da0b679ce3eedc18ac7302036.jpg
 
 ### get original
-GET http://localhost:8080/images/original/e6a8d25da0b679ce3eedc18ac7302036.jpg
+GET {{host}}/images/original/e6a8d25da0b679ce3eedc18ac7302036.jpg
 
 ### get resized
-GET http://localhost:8080/images/resized/e6a8d25da0b679ce3eedc18ac7302036.jpg?type=crop&width=150&height=150&
-    token=some-secure-value-e6a8d25da0b679ce3eedc18ac7302036.jpg-150-150-crop
+GET {{host}}/images/resized/e6a8d25da0b679ce3eedc18ac7302036.jpg?type=crop&width=150&height=150&
+    token=5dec611e

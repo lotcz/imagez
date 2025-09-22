@@ -1,2 +1,3 @@
 .idea
 logs
+/scratches/http-client.private.env.json

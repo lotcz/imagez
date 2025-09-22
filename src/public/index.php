@@ -9,7 +9,6 @@ require __DIR__ . '/../vendor/autoload.php';
 
 $settings = new ArraySettings(
 	[
-		'version' => '1.0.0',
 		'debugMode' => true,
 		'compileContainer' => false,
 		'tmpPath' => __DIR__ . '/../var/tmp/',
