@@ -1,5 +1,2 @@
-- default ext
-- token protection
-
 - quality check endpoint
 

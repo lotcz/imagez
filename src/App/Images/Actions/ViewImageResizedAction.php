@@ -6,6 +6,7 @@ namespace App\Images\Actions;
 
 use App\Application\Actions\ActionError;
 use App\Application\Errors\ForbiddenException;
+use App\Application\Helpers\HashHelper;
 use App\Application\Helpers\StringHelper;
 use App\Images\Info\ImageSize;
 use App\Images\Request\ResizeRequest;
@@ -40,12 +41,10 @@ class ViewImageResizedAction extends ImageAction {
 		$securityToken = $this->settings->get('securityToken');
 		// validate token if set
 		if (StringHelper::notBlank($securityToken)) {
-			$userToken = $this->requireQueryParam('token');
+			$userToken = strtolower($this->requireQueryParam('token'));
 			$rawToken = $resizeRequest->getSecurityRawValue($securityToken);
-
-			// todo: hash
-			$hash = $this->settings->get('debugMode') ? $rawToken : '';
-
+			$hash = $this->settings->get('debugMode') ? $rawToken : HashHelper::crc32hex($rawToken);
+			$this->logger->info($hash);
 			if ($hash !== $userToken) {
 				throw new ForbiddenException("Secure token invalid");
 			}

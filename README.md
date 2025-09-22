@@ -40,10 +40,14 @@ If the security token is `secret` then you can request image from production ser
 
 ### Production
 
-You will need to hash verification token first:
+You will need to hash verification token first (CRC32 hash in hex chars):
 
-    hash=HASH(secret-test.png-450-400-crop-webp)
+    hash=HEX(CRC32(secret-test.png-450-400-crop-webp))
 
 Then you can request an image from production server:
 
     http://localhost:8080/images/resized/test.png?width=450&height=400&type=crop&ext=webp&token={hash}
+
+## Deployment
+
+- delete CompiledContainer.php in cache directory
