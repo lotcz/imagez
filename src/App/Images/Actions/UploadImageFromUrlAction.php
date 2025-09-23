@@ -68,7 +68,7 @@ class UploadImageFromUrlAction extends ImageAction {
 			return $this->respondWithError(
 				new ActionError(
 					ActionError::BAD_REQUEST,
-					"Downloaded image $tmpFileName has no mimetype neither an extension!"
+					"Downloaded image $tmpFileName has neither a mimetype or extension!"
 				)
 			);
 		}

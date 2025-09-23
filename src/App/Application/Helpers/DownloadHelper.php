@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Application\Helpers;
 
+use App\Application\Errors\BadRequestException;
+
 class DownloadHelper {
 
 	public static function fileNameFromUrl(string $url): ?string {
@@ -19,6 +21,14 @@ class DownloadHelper {
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); // Follow redirects
 		curl_setopt($ch, CURLOPT_TIMEOUT, 30); // Timeout in seconds
+		curl_setopt(
+			$ch,
+			CURLOPT_HTTPHEADER,
+			[
+				"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:143.0) Gecko/20100101 Firefox/143.0",
+				"Accept: image/*"
+			]
+		);
 
 		$data = curl_exec($ch);
 
@@ -31,7 +41,7 @@ class DownloadHelper {
 		curl_close($ch);
 
 		if ($httpCode !== 200) {
-			return false; // Not a successful response
+			throw new BadRequestException("Could not download file from $url. Response code: $httpCode");
 		}
 
 		return file_put_contents($path, $data) !== false;
