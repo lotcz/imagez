@@ -26,15 +26,13 @@ class ImageInfo {
 			throw new Exception("Image $this->path does not exist");
 		}
 		if ($this->info === null) {
-			$this->info = @getimagesize($this->path);
-			if ($this->info === null) {
-				$this->info = [];
-			}
+			$info = @getimagesize($this->path);
+			$this->info = is_array($info) ? $info : [];
 		}
 		return $this->info;
 	}
 
-	public function getDimensions(): ImageDimensions {
+	public function getDimensions(): ?ImageDimensions {
 		$info = $this->getInfo();
 		if (!(isset($info[0]) && isset($info[1]))) {
 			return new ImageDimensions(0, 0);

@@ -36,7 +36,7 @@ class ImageFormats {
 		);
 	}
 
-	public function findByExtension(string $ext): ?ImageFormat {
+	public function findByExtension(?string $ext): ?ImageFormat {
 		if (empty($ext)) return null;
 		foreach ($this->formats as $f) {
 			if ($f->hasExtension($ext)) {
@@ -46,7 +46,7 @@ class ImageFormats {
 		return null;
 	}
 
-	public function findByMimeType(string $mime): ?ImageFormat {
+	public function findByMimeType(?string $mime): ?ImageFormat {
 		if (empty($mime)) return null;
 		foreach ($this->formats as $f) {
 			if ($f->mimeType == $mime) {

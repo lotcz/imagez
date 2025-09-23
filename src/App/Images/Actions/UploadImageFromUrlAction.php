@@ -43,7 +43,7 @@ class UploadImageFromUrlAction extends ImageAction {
 
 		$imageInfo = new ImageInfo($tmpPath);
 
-		/* check image dimensions */
+		/* check if image exists */
 		if (!$imageInfo->exists()) {
 			return $this->respondWithError(
 				new ActionError(
@@ -53,31 +53,22 @@ class UploadImageFromUrlAction extends ImageAction {
 			);
 		}
 
-		/* check image dimensions */
-		if ($imageInfo->getDimensions()->isZero()) {
-			return $this->respondWithError(
-				new ActionError(
-					ActionError::BAD_REQUEST,
-					"Downloaded $tmpFileName image is empty"
-				)
-			);
-		}
-
-		/* check mime type/extension */
-		if (StringHelper::isBlank($imageInfo->getMimeType()) && StringHelper::isBlank($imageInfo->getExtension())) {
-			return $this->respondWithError(
-				new ActionError(
-					ActionError::BAD_REQUEST,
-					"Downloaded image $tmpFileName has neither a mimetype or extension!"
-				)
-			);
-		}
-
 		/* check file size */
+		$size = $imageInfo->getFileSize();
+		if ($size <= 0) {
+			unlink($tmpPath);
+			return $this->respondWithError(
+				new ActionError(
+					ActionError::BAD_REQUEST,
+					"Downloaded image $tmpFileName is empty"
+				)
+			);
+		}
+
 		$maxBytes = $this->settings->get('maxImageSizeBytes', 0);
 		if ($maxBytes > 0) {
-			$size = $imageInfo->getFileSize();
 			if ($size > $maxBytes) {
+				unlink($tmpPath);
 				return $this->respondWithError(
 					new ActionError(
 						ActionError::BAD_REQUEST,
@@ -85,6 +76,17 @@ class UploadImageFromUrlAction extends ImageAction {
 					)
 				);
 			}
+		}
+
+		/* check mime type/extension */
+		if (StringHelper::isBlank($imageInfo->getMimeType()) && StringHelper::isBlank($imageInfo->getExtension())) {
+			unlink($tmpPath);
+			return $this->respondWithError(
+				new ActionError(
+					ActionError::BAD_REQUEST,
+					"Downloaded image $tmpFileName has neither a mimetype or extension!"
+				)
+			);
 		}
 
 		/* check format */
@@ -97,14 +99,27 @@ class UploadImageFromUrlAction extends ImageAction {
 		}
 
 		if ($imageFormat === null) {
+			unlink($tmpPath);
 			return $this->respondWithError(
 				new ActionError(
 					ActionError::BAD_REQUEST,
-					"Image is not of a supported type"
+					"Image $tmpFileName is not of a supported type!"
 				)
 			);
 		}
 
+		/* check image dimensions */
+		if ($imageInfo->getDimensions()->isZero()) {
+			unlink($tmpPath);
+			return $this->respondWithError(
+				new ActionError(
+					ActionError::BAD_REQUEST,
+					"Downloaded $tmpFileName image has zero size!"
+				)
+			);
+		}
+
+		/* store if doesn't exist yet*/
 		$hash = HashHelper::fileHash($tmpPath);
 		$name = $hash . '.' . $imageFormat->extension;
 
