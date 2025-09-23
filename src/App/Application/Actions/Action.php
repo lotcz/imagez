@@ -46,9 +46,9 @@ abstract class Action {
 	}
 
 	protected function checkSecureToken() {
-		$securityToken = $this->settings->get('securityToken');
+		$secretToken = $this->settings->get('secretToken');
 		$userToken = $this->requireQueryParam('token');
-		if ($userToken !== $securityToken) {
+		if ($userToken !== $secretToken) {
 			throw new ForbiddenException("Secure token invalid");
 		}
 	}

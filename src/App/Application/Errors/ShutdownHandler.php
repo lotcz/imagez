@@ -61,8 +61,8 @@ class ShutdownHandler {
 				$this->request,
 				$exception,
 				$this->displayErrorDetails,
-				false,
-				false,
+				true,
+				true,
 			);
 
 			$responseEmitter = new ResponseEmitter();

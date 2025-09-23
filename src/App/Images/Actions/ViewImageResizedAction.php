@@ -38,17 +38,17 @@ class ViewImageResizedAction extends ImageAction {
 			$this->getQueryParam('ext')
 		);
 
-		$securityToken = $this->settings->get('securityToken');
+		$secretToken = $this->settings->get('secretToken');
 		// validate token if set
-		if (StringHelper::notBlank($securityToken)) {
+		if (StringHelper::notBlank($secretToken)) {
 			$userToken = strtolower($this->requireQueryParam('token'));
-			$rawToken = $resizeRequest->getSecurityRawValue($securityToken);
+			$rawToken = $resizeRequest->getVerificationTokenRawValue($secretToken);
 			$hash = HashHelper::crc32hex($rawToken);
 			if ($this->settings->get('debugMode')) {
 				$this->logger->info("Hash for $name: $hash");
 			}
 			if ($hash !== $userToken) {
-				throw new ForbiddenException("Secure token invalid");
+				throw new ForbiddenException("Verification token invalid");
 			}
 		}
 

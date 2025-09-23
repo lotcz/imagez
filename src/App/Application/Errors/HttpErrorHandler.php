@@ -11,9 +11,7 @@ use Slim\Handlers\ErrorHandler as SlimErrorHandler;
 use Throwable;
 
 class HttpErrorHandler extends SlimErrorHandler {
-	/**
-	 * @inheritdoc
-	 */
+
 	protected function respond(): Response {
 		$exception = $this->exception;
 		$statusCode = 500;
@@ -25,13 +23,13 @@ class HttpErrorHandler extends SlimErrorHandler {
 		if ($exception instanceof BadRequestException) {
 			$statusCode = 400;
 			$error->setType(ActionError::BAD_REQUEST);
-			$error->setDescription($exception->getMessage());
+			$error->setMessage($exception->getMessage());
 		} else if ($exception instanceof ForbiddenException) {
 			$statusCode = 401;
 			$error->setType(ActionError::VERIFICATION_ERROR);
-			$error->setDescription($exception->getMessage());
+			$error->setMessage($exception->getMessage());
 		} else if ($exception instanceof Throwable && $this->displayErrorDetails) {
-			$error->setDescription($exception->getMessage());
+			$error->setMessage($exception->getMessage());
 		}
 
 		$payload = new ActionPayload($statusCode, null, $error);

@@ -48,8 +48,8 @@ class ResizeRequest {
 		return PathHelper::of($this->getResizedDirName(), $this->getResizedFileName());
 	}
 
-	public function getSecurityRawValue(string $securityToken): string {
-		$base = "$securityToken-{$this->name}-{$this->getResizedDirName()}";
+	public function getVerificationTokenRawValue(string $secretToken): string {
+		$base = "$secretToken-{$this->name}-{$this->getResizedDirName()}";
 		if (!StringHelper::isBlank($this->imageExt)) {
 			$base .= "-{$this->imageExt}";
 		}

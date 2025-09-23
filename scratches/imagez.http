@@ -1,6 +1,6 @@
 ### upload from url
 POST {{host}}/images/upload-url?url=https://www.pragmoon.cz/uploaded_images/thumb/laura-a-jeji-tygri.jpg&
-    token={{securityToken}}
+    token={{secretToken}}
 
 ### get health
 GET {{host}}/images/health/e6a8d25da0b679ce3eedc18ac7302036.jpg

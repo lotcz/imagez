@@ -43,24 +43,18 @@ This will work only if securityToken is not configured on the server:
 
     http://localhost:8080/images/resized/test.png?width=450&height=400&type=crop&ext=webp
 
-#### Debug mode
+#### Secured
 
 To get resized image securely you will need a validation token that is created from params (ext is optional, depending
 on if you used the param):
 
-    {secret-token}-{original_image_name}-{width}h{height}-{type}(-{ext})
+    {secret-token}-{original_image_name}-{width}-{height}-{type}(-{ext})
 
-If the security token is `secret` then you can request image from production server:
-
-    http://localhost:8080/images/resized/test.png?width=450&height=400&type=crop&ext=webp&token=secret-test.png-450-400-crop-webp
-
-#### Production
-
-You will need to hash verification token first (CRC32 hash in hex chars):
+You will need to hash verification token (CRC32 hash in hex chars):
 
     hash=HEX(CRC32(secret-test.png-450-400-crop-webp))
 
-Then you can request an image from production server:
+Then you can then request an image from imagez server:
 
     http://localhost:8080/images/resized/test.png?width=450&height=400&type=crop&ext=webp&token={hash}
 
