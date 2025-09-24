@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Images\Actions;
 
 use App\Application\Actions\ActionError;
+use App\Application\Helpers\PathHelper;
 use Psr\Http\Message\ResponseInterface as Response;
 
 class UploadImageAction extends ImageAction {
@@ -31,7 +32,16 @@ class UploadImageAction extends ImageAction {
 			);
 		}
 
-		$tmpPath = $uploadedFile->getClientFilename();
+		$tmpDir = PathHelper::of($this->settings->get('tmpPath'), 'download');
+		if (!file_exists($tmpDir)) {
+			mkdir($tmpDir, 0777, true);
+		}
+		$tmpFileName = PathHelper::getFileName($uploadedFile->getClientFilename());
+		$tmpPath = PathHelper::of($tmpDir, $tmpFileName);
+		if (file_exists($tmpPath)) {
+			unlink($tmpPath);
+		}
+		$uploadedFile->moveTo($tmpPath);
 
 		try {
 			$info = $this->imageResizer->importImageFile($tmpPath);

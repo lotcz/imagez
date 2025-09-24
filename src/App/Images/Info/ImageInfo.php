@@ -60,7 +60,7 @@ class ImageInfo {
 	public function getHealthPayload(?string $name = null): array {
 		$size = $this->getDimensions();
 		return [
-			'name' => $name || $this->getFileName(),
+			'name' => empty($name) ? $this->getFileName() : $name,
 			'size' => $this->getFileSize(),
 			'width' => $size->x,
 			'height' => $size->y,

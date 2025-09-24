@@ -6,6 +6,6 @@ namespace App;
 
 class AppVersion {
 
-	const string APP_VERSION = '1.1.3';
+	const string APP_VERSION = '1.1.4';
 
 }

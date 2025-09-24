@@ -10,6 +10,19 @@ then you can run:
 
 ## Usage
 
+### Upload file via form data
+
+Use post and include secret token:
+
+<pre>
+POST http://localhost:8080/images/upload?token=some-secure-value
+
+image
+-----------------------
+
+image data
+</pre>
+
 ### Upload from URL
 
 Use post and include secret token:
