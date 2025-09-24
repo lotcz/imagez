@@ -5,14 +5,13 @@ declare(strict_types=1);
 namespace App\Images\Actions;
 
 use App\Application\Actions\ActionError;
-use App\Application\Helpers\PathHelper;
 use Psr\Http\Message\ResponseInterface as Response;
 
 class UploadImageAction extends ImageAction {
 
 	protected function action(): Response {
 		$this->checkSecureToken();
-		
+
 		/** @var \Psr\Http\Message\UploadedFileInterface[] $uploadedFiles */
 		$uploadedFiles = $this->request->getUploadedFiles();
 
@@ -32,28 +31,16 @@ class UploadImageAction extends ImageAction {
 			);
 		}
 
-		/* check file size */
-		$maxBytes = $this->settings->get('maxImageSizeBytes', 0);
-		if ($maxBytes > 0) {
-			$size = $uploadedFile->getSize();
-			if (is_numeric($size) && $size > $maxBytes) {
-				return $this->respondWithError(
-					new ActionError(
-						ActionError::BAD_REQUEST,
-						"Image size $size exceeds max allowed size $maxBytes"
-					)
-				);
+		$tmpPath = $uploadedFile->getClientFilename();
+
+		try {
+			$info = $this->imageResizer->importImageFile($tmpPath);
+			$health = $info->getHealthPayload();
+			return $this->respondWithData($health);
+		} finally {
+			if (file_exists($tmpPath)) {
+				unlink($tmpPath);
 			}
 		}
-
-		$originalFilename = $uploadedFile->getClientFilename();
-		$originalExtension = PathHelper::getFileExt($originalFilename);
-		$basename = bin2hex(random_bytes(12));
-		$filename = $basename . '.' . $originalExtension;
-		$path = $this->imageStorage->getOriginalPath($filename);
-		$uploadedFile->moveTo($path);
-
-		$health = $this->imageStorage->getHealthPayload($filename);
-		return $this->respondWithData($health);
 	}
 }

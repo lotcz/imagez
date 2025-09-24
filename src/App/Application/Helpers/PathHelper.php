@@ -34,18 +34,19 @@ class PathHelper {
 		return PathHelper::ofParts($strings);
 	}
 
-	public static function getFileExt(string $fileName): ?string {
-		if (empty($fileName)) return null;
-		$parts = explode(".", $fileName);
-		$len = count($parts);
-		if ($len < 2) return null;
-		return $parts[$len - 1];
+	public static function getFileName(?string $path): ?string {
+		if (StringHelper::isBlank($path)) return null;
+		return basename($path);
 	}
 
-	public static function getFileBase(string $fileName): string {
-		$ext = PathHelper::getFileExt($fileName);
-		if (StringHelper::isBlank($ext)) return $fileName;
-		return substr($fileName, 0, strlen($fileName) - strlen($ext) - 1);
+	public static function getFileExt(?string $fileName): ?string {
+		if (StringHelper::isBlank($fileName)) return null;
+		return pathinfo($fileName, PATHINFO_EXTENSION);
+	}
+
+	public static function getFileBase(?string $fileName): ?string {
+		if (StringHelper::isBlank($fileName)) return null;
+		return pathinfo($fileName, PATHINFO_FILENAME);
 	}
 
 }

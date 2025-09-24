@@ -23,7 +23,7 @@ class ImageInfo {
 
 	public function getInfo(): array {
 		if (!$this->exists()) {
-			throw new Exception("Image $this->path does not exist");
+			throw new Exception("Image $this->path does not exist, cannot get info");
 		}
 		if ($this->info === null) {
 			$info = @getimagesize($this->path);
@@ -45,6 +45,10 @@ class ImageInfo {
 		return isset($info['mime']) ? $info['mime'] : null;
 	}
 
+	public function getFileName(): ?string {
+		return PathHelper::getFileName($this->path);
+	}
+
 	public function getExtension(): ?string {
 		return PathHelper::getFileExt($this->path);
 	}
@@ -53,4 +57,14 @@ class ImageInfo {
 		return filesize($this->path);
 	}
 
+	public function getHealthPayload(?string $name = null): array {
+		$size = $this->getDimensions();
+		return [
+			'name' => $name || $this->getFileName(),
+			'size' => $this->getFileSize(),
+			'width' => $size->x,
+			'height' => $size->y,
+			'mime' => $this->getMimeType()
+		];
+	}
 }

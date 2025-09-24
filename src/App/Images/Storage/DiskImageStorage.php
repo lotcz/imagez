@@ -6,7 +6,6 @@ namespace App\Images\Storage;
 
 use App\Application\Helpers\PathHelper;
 use App\Application\Settings\Settings;
-use App\Images\Info\ImageInfo;
 use App\Images\Request\ResizeRequest;
 use Psr\Log\LoggerInterface;
 
@@ -85,19 +84,6 @@ class DiskImageStorage implements ImageStorage {
 
 	public function deleteResized(ResizeRequest $imageRequest): void {
 		$this->deleteFile($this->getResizedPath($imageRequest));
-	}
-
-	public function getHealthPayload(string $name): array {
-		$path = $this->getOriginalPath($name);
-		$info = new ImageInfo($path);
-		$size = $info->getDimensions();
-		return [
-			'name' => $name,
-			'size' => $info->getFileSize(),
-			'width' => $size->x,
-			'height' => $size->y,
-			'mime' => $info->getMimeType()
-		];
 	}
 
 }

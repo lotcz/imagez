@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace App\Images\Resizer;
 
+use App\Application\Errors\BadRequestException;
+use App\Application\Helpers\HashHelper;
+use App\Application\Helpers\PathHelper;
 use App\Application\Helpers\StringHelper;
+use App\Application\Settings\Settings;
 use App\Images\Formats\ImageFormats;
 use App\Images\Info\ImageDimensions;
 use App\Images\Info\ImageInfo;
@@ -16,14 +20,17 @@ use Throwable;
 
 class GdImageResizer implements ImageResizer {
 
-	private ImageStorage $imageStorage;
-
 	private LoggerInterface $logger;
+
+	private Settings $settings;
+
+	private ImageStorage $imageStorage;
 
 	private ImageFormats $formats;
 
-	public function __construct(LoggerInterface $logger, ImageStorage $storage, ImageFormats $formats) {
+	public function __construct(LoggerInterface $logger, Settings $settings, ImageStorage $storage, ImageFormats $formats) {
 		$this->logger = $logger;
+		$this->settings = $settings;
 		$this->imageStorage = $storage;
 		$this->formats = $formats;
 	}
@@ -64,7 +71,6 @@ class GdImageResizer implements ImageResizer {
 		}
 
 		$formatDesc = $resizeRequest->getResizedPath();
-		$this->logger->info("Resizing image {$resizeRequest->name} to $formatDesc");
 
 		try {
 			$image_create_func = $originalFormat->image_create_func;
@@ -166,5 +172,64 @@ class GdImageResizer implements ImageResizer {
 
 		@imagedestroy($img);
 		@imagedestroy($tmp);
+	}
+
+	public function importImageFile(string $tmpPath): ImageInfo {
+		$imageInfo = new ImageInfo($tmpPath);
+		$tmpFileName = $imageInfo->getFileName();
+
+		/* check if image exists */
+		if (!$imageInfo->exists()) {
+			throw new BadRequestException("Something went wrong, file $tmpPath does not exist");
+		}
+
+		/* check file size */
+		$size = $imageInfo->getFileSize();
+		if ($size <= 0) {
+			throw new BadRequestException("Downloaded image $tmpFileName is empty");
+		}
+
+		$maxBytes = $this->settings->get('maxImageSizeBytes', 0);
+		if ($maxBytes > 0 && $size > $maxBytes) {
+			throw new BadRequestException("Image size $size of $tmpFileName exceeds max allowed size $maxBytes");
+		}
+
+		/* check mime type/extension */
+		if (StringHelper::isBlank($imageInfo->getMimeType()) && StringHelper::isBlank($imageInfo->getExtension())) {
+			throw new BadRequestException("Downloaded image $tmpFileName has neither a mimetype or extension!");
+		}
+
+		/* check format */
+		$originalFilename = $tmpFileName;
+		$originalExtension = PathHelper::getFileExt($originalFilename);
+
+		$imageFormat = $this->formats->findByExtension($originalExtension);
+		if ($imageFormat === null) {
+			$imageFormat = $this->formats->findByMimeType($imageInfo->getMimeType());
+		}
+
+		if ($imageFormat === null) {
+			throw new BadRequestException("Image $tmpFileName is not of a supported type!");
+		}
+
+		/* check image dimensions */
+		if ($imageInfo->getDimensions()->isZero()) {
+			throw new BadRequestException("Downloaded $tmpFileName image has zero size!");
+		}
+
+		/* store if doesn't exist yet */
+		$hash = HashHelper::fileHash($tmpPath);
+		$name = $hash . '.' . $imageFormat->extension;
+
+		$path = $this->imageStorage->getOriginalPath($name);
+
+		if ($this->imageStorage->fileExists($path)) {
+			$this->logger->info("File $name already exists, keeping only the original file");
+			unlink($tmpPath);
+		} else {
+			rename($tmpPath, $path);
+		}
+
+		return new ImageInfo($path);
 	}
 }
