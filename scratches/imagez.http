@@ -15,3 +15,6 @@ GET {{host}}/images/resized/e6a8d25da0b679ce3eedc18ac7302036.jpg?type=crop&width
 ### PROD get resized
 GET {{host}}/images/resized/e6a8d25da0b679ce3eedc18ac7302036.jpg?type=crop&width=150&height=150&
     token=5dec611e
+
+### delete original and all resized
+DELETE {{host}}/images/original/999403248346035bf343c0aa8cbc6767.jpg?token={{secretToken}}

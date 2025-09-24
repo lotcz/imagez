@@ -10,6 +10,7 @@ use App\Application\Errors\ShutdownHandler;
 use App\Application\ResponseEmitter\ImageResponseEmitter;
 use App\Application\ResponseEmitter\ResponseEmitter;
 use App\Application\Settings\Settings;
+use App\Images\Actions\DeleteImageAction;
 use App\Images\Actions\UploadImageAction;
 use App\Images\Actions\UploadImageFromUrlAction;
 use App\Images\Actions\ViewImageHealthAction;
@@ -98,6 +99,7 @@ class ImagezApp {
 		$this->app->group('/images', function (RouteCollectorProxy $group) {
 			$group->post('/upload', UploadImageAction::class);
 			$group->post('/upload-url', UploadImageFromUrlAction::class);
+			$group->delete('/original/{name}', DeleteImageAction::class);
 			$group->get('/health/{name}', ViewImageHealthAction::class);
 			$group->get('/original/{name}', ViewImageOriginalAction::class);
 			$group->get('/resized/{name}', ViewImageResizedAction::class);

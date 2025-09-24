@@ -56,4 +56,12 @@ class ImageFormats {
 		return null;
 	}
 
+	public function getResizedExtensions(): array {
+		$extensions = [];
+		foreach ($this->formats as $f) {
+			$extensions[] = $f->extension;
+		}
+		return $extensions;
+	}
+
 }

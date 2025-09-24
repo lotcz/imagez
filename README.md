@@ -58,6 +58,12 @@ Then you can then request an image from imagez server:
 
     http://localhost:8080/images/resized/test.png?width=450&height=400&type=crop&ext=webp&token={hash}
 
+### Delete image
+
+This will delete image completely:
+
+    DELETE http://localhost:8080/images/original/laura-a-jeji-tygri.jpg&token=some-secure-value
+
 ## Deployment
 
 - delete CompiledContainer.php in cache directory

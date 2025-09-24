@@ -6,22 +6,27 @@ namespace App\Images\Storage;
 
 use App\Application\Helpers\PathHelper;
 use App\Application\Settings\Settings;
+use App\Images\Formats\ImageFormats;
 use App\Images\Request\ResizeRequest;
+use DirectoryIterator;
 use Psr\Log\LoggerInterface;
 
 class DiskImageStorage implements ImageStorage {
 
 	private LoggerInterface $logger;
 
+	private ImageFormats $formats;
+
 	private string $baseDir;
 
 	private string $originalDir;
 
-	public function __construct(LoggerInterface $logger, Settings $settings) {
+	public function __construct(LoggerInterface $logger, Settings $settings, ImageFormats $formats) {
 		$this->logger = $logger;
+		$this->formats = $formats;
 
 		$this->baseDir = $settings->get('imageStorePath');
-		if (!file_exists($this->baseDir)) {
+		if (!is_dir($this->baseDir)) {
 			$this->logger->info("Creating base dir: $this->baseDir");
 			mkdir($this->baseDir, 0777, true);
 		}
@@ -79,7 +84,31 @@ class DiskImageStorage implements ImageStorage {
 	}
 
 	public function deleteAllResized(string $name): void {
-		// TODO: Implement deleteAllResized() method.
+		if (!is_dir($this->baseDir)) {
+			return;
+		}
+
+		$this->logger->info("Deleting all resized variants of $name");
+
+		$base = PathHelper::getFileBase($name);
+		$extensions = $this->formats->getResizedExtensions();
+		$fileNames = [];
+		foreach ($extensions as $ext) {
+			$fileNames[] = $base . '.' . $ext;
+		}
+
+		$iterator = new DirectoryIterator($this->baseDir);
+
+		foreach ($iterator as $dir) {
+			if ($dir->isDir() && !$dir->isDot() && $dir->getFilename() != 'original') {
+				foreach ($fileNames as $fileName) {
+					$filePath = PathHelper::of($dir->getPathname(), $fileName);
+					if (is_file($filePath)) {
+						@unlink($filePath);
+					}
+				}
+			}
+		}
 	}
 
 	public function deleteResized(ResizeRequest $imageRequest): void {
