@@ -1,2 +1,1 @@
 - add svg support?
-- implement manual upload reusing same code as in download
