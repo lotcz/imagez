@@ -6,6 +6,7 @@ services:
     container_name: slim-app
     volumes:
       - ./src:/var/www/html
+      - ./docker/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
     working_dir: /var/www/html
     command: >
       bash -c "mkdir -p /var/www/html/var 
