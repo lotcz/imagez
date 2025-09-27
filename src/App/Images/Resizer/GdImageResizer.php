@@ -5,10 +5,6 @@ declare(strict_types=1);
 namespace App\Images\Resizer;
 
 use App\Application\Errors\BadRequestException;
-use App\Application\Helpers\HashHelper;
-use App\Application\Helpers\PathHelper;
-use App\Application\Helpers\StringHelper;
-use App\Application\Settings\Settings;
 use App\Images\Formats\ImageFormats;
 use App\Images\Info\ImageDimensions;
 use App\Images\Info\ImageInfo;
@@ -17,6 +13,13 @@ use App\Images\Request\ResizeType;
 use App\Images\Storage\ImageStorage;
 use Psr\Log\LoggerInterface;
 use Throwable;
+use Zavadil\Common\Settings\Settings;
+
+\HashHelper;
+
+\PathHelper;
+
+\StringHelper;
 
 class GdImageResizer implements ImageResizer {
 

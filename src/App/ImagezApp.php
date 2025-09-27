@@ -9,7 +9,6 @@ use App\Application\Errors\HttpErrorHandler;
 use App\Application\Errors\ShutdownHandler;
 use App\Application\ResponseEmitter\ImageResponseEmitter;
 use App\Application\ResponseEmitter\ResponseEmitter;
-use App\Application\Settings\Settings;
 use App\Images\Actions\DeleteImageAction;
 use App\Images\Actions\UploadImageAction;
 use App\Images\Actions\UploadImageFromUrlAction;
@@ -32,6 +31,7 @@ use Slim\Factory\ServerRequestCreatorFactory;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
 use Slim\Routing\RouteCollectorProxy;
+use Zavadil\Common\Settings\Settings;
 
 class ImagezApp {
 

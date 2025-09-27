@@ -6,11 +6,11 @@ namespace App\Images\Actions;
 
 use App\Application\Actions\ActionError;
 use App\Application\Errors\ForbiddenException;
-use App\Application\Helpers\HashHelper;
-use App\Application\Helpers\StringHelper;
 use App\Images\Info\ImageDimensions;
 use App\Images\Request\ResizeRequest;
 use Psr\Http\Message\ResponseInterface as Response;
+use Zavadil\Common\Helpers\HashHelper;
+use Zavadil\Common\Helpers\StringHelper;
 
 class ViewImageResizedAction extends ImageAction {
 

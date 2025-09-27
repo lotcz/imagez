@@ -6,13 +6,13 @@ namespace App\Images\Actions;
 
 use App\Application\Actions\Action;
 use App\Application\Actions\ActionError;
-use App\Application\Settings\Settings;
 use App\Images\Formats\ImageFormats;
 use App\Images\Resizer\ImageResizer;
 use App\Images\Storage\ImageStorage;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerInterface;
 use Slim\Psr7\Stream;
+use Zavadil\Common\Settings\Settings;
 
 abstract class ImageAction extends Action {
 

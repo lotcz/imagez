@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Images\Request;
 
 use App\Application\Errors\BadRequestException;
-use App\Application\Helpers\PathHelper;
-use App\Application\Helpers\StringHelper;
 use App\Images\Info\ImageDimensions;
+use Zavadil\Common\Helpers\PathHelper;
+use Zavadil\Common\Helpers\StringHelper;
 
 class ResizeRequest {
 

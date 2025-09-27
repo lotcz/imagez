@@ -6,10 +6,10 @@ namespace App\Application\Actions;
 
 use App\Application\Errors\BadRequestException;
 use App\Application\Errors\ForbiddenException;
-use App\Application\Settings\Settings;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
+use Zavadil\Common\Settings\Settings;
 
 abstract class Action {
 

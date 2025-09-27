@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Application\Settings\ArraySettings;
 use App\ImagezApp;
+use Zavadil\Common\Settings\ArraySettings;
 
 require __DIR__ . '/../vendor/autoload.php';
 

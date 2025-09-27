@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Images\Info;
 
-use App\Application\Helpers\PathHelper;
 use Exception;
+use Zavadil\Common\Helpers\PathHelper;
 
 class ImageInfo {
 

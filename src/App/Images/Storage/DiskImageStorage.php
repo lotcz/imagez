@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Images\Storage;
 
-use App\Application\Helpers\PathHelper;
-use App\Application\Settings\Settings;
 use App\Images\Formats\ImageFormats;
 use App\Images\Request\ResizeRequest;
 use DirectoryIterator;
 use Psr\Log\LoggerInterface;
+use Zavadil\Common\Helpers\PathHelper;
+use Zavadil\Common\Settings\Settings;
 
 class DiskImageStorage implements ImageStorage {
 

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Images\Actions;
 
 use App\Application\Actions\ActionError;
-use App\Application\Helpers\DownloadHelper;
-use App\Application\Helpers\PathHelper;
 use Psr\Http\Message\ResponseInterface as Response;
+use Zavadil\Common\Helpers\DownloadHelper;
+use Zavadil\Common\Helpers\PathHelper;
 
 class UploadImageFromUrlAction extends ImageAction {
 
