@@ -13,13 +13,10 @@ use App\Images\Request\ResizeType;
 use App\Images\Storage\ImageStorage;
 use Psr\Log\LoggerInterface;
 use Throwable;
+use Zavadil\Common\Helpers\HashHelper;
+use Zavadil\Common\Helpers\PathHelper;
+use Zavadil\Common\Helpers\StringHelper;
 use Zavadil\Common\Settings\Settings;
-
-\HashHelper;
-
-\PathHelper;
-
-\StringHelper;
 
 class GdImageResizer implements ImageResizer {
 
