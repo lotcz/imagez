@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     libxml2-dev \
     libjpeg-dev \
+    libavif-dev \
     libjpeg62-turbo-dev \
     libwebp-dev \
     zip \

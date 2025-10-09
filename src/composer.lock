@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "11736f2919c6ec75a892867010d241e0",
+    "content-hash": "4603c2962134e07e792f4f736b67c5f7",
     "packages": [
         {
             "name": "fig/http-message-util",
@@ -125,19 +125,23 @@
         },
         {
             "name": "lotcz/zavadil-php-common",
-            "version": "1.0.0",
+            "version": "1.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lotcz/zavadil-php-common.git",
-                "reference": "d774550f2e0d864065b03c5b7ab4d04511f99e59"
+                "reference": "837c4fce7c8a1980fd617617065f9332ce7275b7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lotcz/zavadil-php-common/zipball/d774550f2e0d864065b03c5b7ab4d04511f99e59",
-                "reference": "d774550f2e0d864065b03c5b7ab4d04511f99e59",
+                "url": "https://api.github.com/repos/lotcz/zavadil-php-common/zipball/837c4fce7c8a1980fd617617065f9332ce7275b7",
+                "reference": "837c4fce7c8a1980fd617617065f9332ce7275b7",
                 "shasum": ""
             },
             "require": {
+                "ext-curl": "*",
+                "ext-iconv": "*",
+                "ext-json": "*",
+                "ext-mbstring": "*",
                 "php": "^8.4"
             },
             "require-dev": {
@@ -162,9 +166,9 @@
             "description": "Common PHP utilities and helper functions",
             "support": {
                 "issues": "https://github.com/lotcz/zavadil-php-common/issues",
-                "source": "https://github.com/lotcz/zavadil-php-common/tree/v1.0.0"
+                "source": "https://github.com/lotcz/zavadil-php-common/tree/1.2.1"
             },
-            "time": "2025-09-27T15:42:29+00:00"
+            "time": "2025-10-01T13:39:07+00:00"
         },
         {
             "name": "monolog/monolog",

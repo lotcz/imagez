@@ -34,6 +34,12 @@ class ImageFormats {
 			"imagecreatefromgif",
 			"imagegif"
 		);
+		$this->formats[] = new ImageFormat(
+			"avif",
+			"image/avif",
+			"imagecreatefromavif",
+			"imageavif"
+		);
 	}
 
 	public function findByExtension(?string $ext): ?ImageFormat {
