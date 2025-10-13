@@ -49,6 +49,8 @@ To get resized image, you must provide image size and optionally other params
 - height (required)
 - type (required, desired resize type - fit, crop or scale)
 - ext (optional, desired image extension - jpg, png, webp or gif)
+- v (optional, vertical align - top, center ,bottom, default center)
+- h (optional, horizontal align - left, center, right, default center)
 
 #### Unsecured
 
@@ -61,7 +63,7 @@ This will work only if securityToken is not configured on the server:
 To get resized image securely you will need a validation token that is created from params (ext is optional, depending
 on if you used the param):
 
-    {secret-token}-{original_image_name}-{width}-{height}-{type}(-{ext})
+    {secret-token}-{original_image_name}-{width}-{height}-{type}(-{ext})(-{v})(-{h})
 
 You will need to hash verification token (CRC32 hash in hex chars):
 

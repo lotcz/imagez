@@ -8,8 +8,10 @@ use App\Application\Errors\BadRequestException;
 use App\Images\Formats\ImageFormats;
 use App\Images\Info\ImageDimensions;
 use App\Images\Info\ImageInfo;
+use App\Images\Request\HorizontalAlign;
 use App\Images\Request\ResizeRequest;
 use App\Images\Request\ResizeType;
+use App\Images\Request\VerticalAlign;
 use App\Images\Storage\ImageStorage;
 use Psr\Log\LoggerInterface;
 use Throwable;
@@ -96,12 +98,33 @@ class GdImageResizer implements ImageResizer {
 
 				if ($original_aspect > $new_aspect) {
 					$srcSize->x = intval(round((float)$originalSize->y * $new_aspect));
-					$srcStart->x = intval(round((float)($originalSize->x - $srcSize->x) / 2));
+					$xdiff = $originalSize->x - $srcSize->x;
+					switch ($resizeRequest->horizontalAlign) {
+						case HorizontalAlign::LEFT:
+							$srcStart->x = 0;
+							break;
+						case HorizontalAlign::RIGHT:
+							$srcStart->x = $xdiff;
+							break;
+						case HorizontalAlign::CENTER:
+						default:
+							$srcStart->x = intval(round((float)$xdiff / 2));
+					}
 				} else {
 					$srcSize->y = intval(round((float)$originalSize->x / $new_aspect));
-					$srcStart->y = intval(round((float)($originalSize->y - $srcSize->y) / 2));
+					$ydiff = $originalSize->y - $srcSize->y;
+					switch ($resizeRequest->verticalAlign) {
+						case VerticalAlign::TOP:
+							$srcStart->y = 0;
+							break;
+						case VerticalAlign::BOTTOM:
+							$srcStart->y = $ydiff;
+							break;
+						case VerticalAlign::CENTER:
+						default:
+							$srcStart->y = intval(round((float)$ydiff / 2));
+					}
 				}
-
 				break;
 
 			case ResizeType::FIT:

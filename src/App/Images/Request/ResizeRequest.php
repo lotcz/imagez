@@ -17,13 +17,19 @@ class ResizeRequest {
 
 	public string $resizeType;
 
+	public ?string $verticalAlign;
+
+	public ?string $horizontalAlign;
+
 	public ?string $imageExt;
 
 	public function __construct(
 		string $name,
 		ImageDimensions $size,
 		string $resizeType,
-		?string $imageExt = null
+		?string $imageExt = null,
+		?string $verticalAlign = null,
+		?string $horizontalAlign = null
 	) {
 		$this->name = $name;
 		$this->size = $size;
@@ -34,6 +40,16 @@ class ResizeRequest {
 		$this->resizeType = $resizeType;
 
 		$this->imageExt = empty($imageExt) ? null : strtolower($imageExt);
+
+		if (StringHelper::notBlank($verticalAlign) && !VerticalAlign::exists($verticalAlign)) {
+			throw new BadRequestException("Vertical align $verticalAlign does not exist");
+		}
+		$this->verticalAlign = $verticalAlign;
+
+		if (StringHelper::notBlank($horizontalAlign) && !HorizontalAlign::exists($horizontalAlign)) {
+			throw new BadRequestException("Horizontal align $horizontalAlign does not exist");
+		}
+		$this->horizontalAlign = $horizontalAlign;
 	}
 
 	public function getResizedDirName(): string {
@@ -41,7 +57,16 @@ class ResizeRequest {
 	}
 
 	public function getResizedFileName(): string {
-		return StringHelper::isBlank($this->imageExt) ? $this->name : PathHelper::getFileBase($this->name) . '.' . $this->imageExt;
+		$base = PathHelper::getFileBase($this->name);
+		if (!StringHelper::isBlank($this->verticalAlign)) {
+			$base .= "-{$this->verticalAlign}";
+		}
+		if (!StringHelper::isBlank($this->horizontalAlign)) {
+			$base .= "-{$this->horizontalAlign}";
+		}
+		$base .= '.';
+		$base .= StringHelper::isBlank($this->imageExt) ? PathHelper::getFileExt($this->name) : $this->imageExt;
+		return $base;
 	}
 
 	public function getResizedPath(): string {
@@ -52,6 +77,12 @@ class ResizeRequest {
 		$base = "$secretToken-{$this->name}-{$this->getResizedDirName()}";
 		if (!StringHelper::isBlank($this->imageExt)) {
 			$base .= "-{$this->imageExt}";
+		}
+		if (!StringHelper::isBlank($this->verticalAlign)) {
+			$base .= "-{$this->verticalAlign}";
+		}
+		if (!StringHelper::isBlank($this->horizontalAlign)) {
+			$base .= "-{$this->horizontalAlign}";
 		}
 		return $base;
 	}

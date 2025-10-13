@@ -13,6 +13,7 @@ class ResizeType {
 
 	/**
 	 * Scale and crop to match exactly the requested dimensions.
+	 * Alignment controlled by additional params
 	 */
 	public const CROP = 'crop';
 

@@ -35,7 +35,9 @@ class ViewImageResizedAction extends ImageAction {
 				$this->requireIntQueryParam('height')
 			),
 			$this->requireQueryParam('type'),
-			$this->getQueryParam('ext')
+			$this->getQueryParam('ext'),
+			$this->getQueryParam('v'),
+			$this->getQueryParam('h')
 		);
 
 		$secretToken = $this->settings->get('secretToken');
