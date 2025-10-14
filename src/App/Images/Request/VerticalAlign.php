@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Images\Request;
 
+use Zavadil\Common\Helpers\StringHelper;
+
 class VerticalAlign {
 
 	public const TOP = 'top';
@@ -17,6 +19,6 @@ class VerticalAlign {
 	}
 
 	public static function exists(string $align): bool {
-		return in_array($align, self::all());
+		return in_array(StringHelper::lowercase($align), self::all());
 	}
 }

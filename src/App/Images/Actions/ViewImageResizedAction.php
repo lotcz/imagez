@@ -54,7 +54,7 @@ class ViewImageResizedAction extends ImageAction {
 			}
 		}
 
-		// set default extension if not explicitly requested and settings exists
+		// set extension if not explicitly requested and default settings exists
 		if (StringHelper::isBlank($resizeRequest->imageExt)
 			&& StringHelper::notBlank($this->settings->get('defaultResizedExt'))) {
 			$resizeRequest->imageExt = $this->settings->get('defaultResizedExt');

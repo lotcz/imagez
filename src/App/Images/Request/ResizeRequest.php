@@ -44,12 +44,12 @@ class ResizeRequest {
 		if (StringHelper::notBlank($verticalAlign) && !VerticalAlign::exists($verticalAlign)) {
 			throw new BadRequestException("Vertical align $verticalAlign does not exist");
 		}
-		$this->verticalAlign = $verticalAlign;
+		$this->verticalAlign = StringHelper::lowercase($verticalAlign);
 
 		if (StringHelper::notBlank($horizontalAlign) && !HorizontalAlign::exists($horizontalAlign)) {
 			throw new BadRequestException("Horizontal align $horizontalAlign does not exist");
 		}
-		$this->horizontalAlign = $horizontalAlign;
+		$this->horizontalAlign = StringHelper::lowercase($horizontalAlign);
 	}
 
 	public function getResizedDirName(): string {

@@ -9,8 +9,8 @@ GET {{host}}/images/health/e6a8d25da0b679ce3eedc18ac7302036.jpg
 GET {{host}}/images/original/e6a8d25da0b679ce3eedc18ac7302036.jpg
 
 ### DEV get resized
-GET {{host}}/images/resized/e6a8d25da0b679ce3eedc18ac7302036.jpg?type=crop&width=150&height=50&v=bottom&
-    token=5c09042c
+GET {{host}}/images/resized/e6a8d25da0b679ce3eedc18ac7302036.jpg?type=crop&width=50&height=150&v=top&h=left&
+    token=3c8cb52f
 
 ### PROD get resized
 GET {{host}}/images/resized/e6a8d25da0b679ce3eedc18ac7302036.jpg?type=crop&width=150&height=150&
