@@ -75,14 +75,14 @@ class ResizeRequest {
 
 	public function getVerificationTokenRawValue(string $secretToken): string {
 		$base = "$secretToken-{$this->name}-{$this->getResizedDirName()}";
-		if (!StringHelper::isBlank($this->imageExt)) {
-			$base .= "-{$this->imageExt}";
+		if (StringHelper::notBlank($this->imageExt)) {
+			$base .= "-$this->imageExt";
 		}
-		if (!StringHelper::isBlank($this->verticalAlign)) {
-			$base .= "-{$this->verticalAlign}";
+		if (StringHelper::notBlank($this->verticalAlign)) {
+			$base .= "-$this->verticalAlign";
 		}
-		if (!StringHelper::isBlank($this->horizontalAlign)) {
-			$base .= "-{$this->horizontalAlign}";
+		if (StringHelper::notBlank($this->horizontalAlign)) {
+			$base .= "-$this->horizontalAlign";
 		}
 		return $base;
 	}

@@ -43,7 +43,7 @@ class ViewImageResizedAction extends ImageAction {
 		$secretToken = $this->settings->get('secretToken');
 		// validate token if set
 		if (StringHelper::notBlank($secretToken)) {
-			$userToken = strtolower($this->requireQueryParam('token'));
+			$userToken = StringHelper::lowercase($this->requireQueryParam('token'));
 			$rawToken = $resizeRequest->getVerificationTokenRawValue($secretToken);
 			$hash = HashHelper::crc32hex($rawToken);
 			if ($this->settings->get('debugMode')) {
