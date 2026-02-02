@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Images\Actions;
+namespace App\Application\Actions\images;
 
 use App\Application\Actions\ActionError;
 use App\Application\Errors\ForbiddenException;

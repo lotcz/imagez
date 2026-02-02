@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Images\Actions;
+namespace App\Application\Actions\images;
 
 use App\Application\Actions\ActionError;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -16,8 +16,6 @@ class UploadImageFromUrlAction extends ImageAction {
 
 		$urlEncoded = $this->requireQueryParam('url');
 		$url = urldecode($urlEncoded);
-
-		$this->logger->info("Downloading from $url");
 
 		$tmpDir = PathHelper::of($this->settings->get('tmpPath'), 'download');
 		if (!file_exists($tmpDir)) {

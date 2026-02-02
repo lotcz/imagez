@@ -47,7 +47,11 @@ abstract class Action {
 
 	protected function checkSecureToken() {
 		$secretToken = $this->settings->get('secretToken');
-		$userToken = $this->requireQueryParam('token');
+		$userToken = $this->getQueryParam('token');
+		if (empty($userToken) && $this->request->getMethod() === 'POST') {
+			$form = $this->getFormData();
+			$userToken = $form['token'];
+		}
 		if ($userToken !== $secretToken) {
 			throw new ForbiddenException("Secure token invalid");
 		}

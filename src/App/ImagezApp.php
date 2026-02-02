@@ -4,17 +4,18 @@ declare(strict_types=1);
 
 namespace App;
 
-use App\Application\Actions\StatusAction;
+use App\Application\Actions\images\DeleteImageAction;
+use App\Application\Actions\images\UploadImageAction;
+use App\Application\Actions\images\UploadImageFromUrlAction;
+use App\Application\Actions\images\ViewImageHealthAction;
+use App\Application\Actions\images\ViewImageOriginalAction;
+use App\Application\Actions\images\ViewImageResizedAction;
+use App\Application\Actions\status\StatusAction;
+use App\Application\Actions\upload\UploadAction;
 use App\Application\Errors\HttpErrorHandler;
 use App\Application\Errors\ShutdownHandler;
 use App\Application\ResponseEmitter\ImageResponseEmitter;
 use App\Application\ResponseEmitter\ResponseEmitter;
-use App\Images\Actions\DeleteImageAction;
-use App\Images\Actions\UploadImageAction;
-use App\Images\Actions\UploadImageFromUrlAction;
-use App\Images\Actions\ViewImageHealthAction;
-use App\Images\Actions\ViewImageOriginalAction;
-use App\Images\Actions\ViewImageResizedAction;
 use App\Images\Formats\ImageFormats;
 use App\Images\Resizer\GdImageResizer;
 use App\Images\Resizer\ImageResizer;
@@ -95,6 +96,8 @@ class ImagezApp {
 		});
 
 		$this->app->get('/', StatusAction::class);
+
+		$this->app->get('/upload', UploadAction::class);
 
 		$this->app->group('/images', function (RouteCollectorProxy $group) {
 			$group->post('/upload', UploadImageAction::class);

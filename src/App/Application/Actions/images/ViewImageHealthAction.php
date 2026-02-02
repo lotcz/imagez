@@ -2,18 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Images\Actions;
+namespace App\Application\Actions\images;
 
 use App\Application\Actions\ActionError;
+use App\Images\Info\ImageInfo;
 use Psr\Http\Message\ResponseInterface as Response;
 
-class ViewImageOriginalAction extends ImageAction {
+class ViewImageHealthAction extends ImageAction {
 
 	protected function action(): Response {
 		$name = $this->requireArg('name');
 		$path = $this->imageStorage->getOriginalPath($name);
+		$info = new ImageInfo($path);
 
-		if (!$this->imageStorage->fileExists($path)) {
+		if (!$info->exists()) {
 			return $this->respondWithError(
 				new ActionError(
 					ActionError::RESOURCE_NOT_FOUND,
@@ -23,6 +25,7 @@ class ViewImageOriginalAction extends ImageAction {
 			);
 		}
 
-		return $this->respondWithImage($path, $name);
+		$health = $info->getHealthPayload($name);
+		return $this->respondWithData($health);
 	}
 }
