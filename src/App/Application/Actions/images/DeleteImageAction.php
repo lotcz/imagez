@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Application\Actions\images;
 
 use App\Application\Actions\ActionError;
-use App\Application\Actions\Actions\ImageAction;
+use App\Application\Actions\GenericImageAction;
 use Psr\Http\Message\ResponseInterface as Response;
 
-class DeleteImageAction extends ImageAction {
+class DeleteImageAction extends GenericImageAction {
 
 	protected function action(): Response {
 		$this->checkSecureToken();

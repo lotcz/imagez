@@ -2,23 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Actions\images;
+namespace App\Application\Actions;
 
-use App\Application\Actions\Action;
-use App\Application\Actions\ActionError;
 use App\Images\Formats\ImageFormats;
-use App\Images\Resizer\ImageResizer;
 use App\Images\Storage\ImageStorage;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerInterface;
 use Slim\Psr7\Stream;
 use Zavadil\Common\Settings\Settings;
 
-abstract class ImageAction extends Action {
+abstract class GenericImageAction extends GenericAction {
 
 	protected ImageFormats $formats;
-
-	protected ImageResizer $imageResizer;
 
 	protected ImageStorage $imageStorage;
 
@@ -26,12 +21,10 @@ abstract class ImageAction extends Action {
 		LoggerInterface $logger,
 		Settings $settings,
 		ImageFormats $formats,
-		ImageResizer $imageResizer,
 		ImageStorage $imageStorage
 	) {
 		parent::__construct($logger, $settings);
 		$this->formats = $formats;
-		$this->imageResizer = $imageResizer;
 		$this->imageStorage = $imageStorage;
 	}
 

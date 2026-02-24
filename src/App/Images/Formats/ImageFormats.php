@@ -14,7 +14,8 @@ class ImageFormats {
 			"image/jpeg",
 			"imagecreatefromjpeg",
 			"imagejpeg",
-			["jpeg", "jfif", "jfif-tbnl", "jpe"]
+			["jpeg", "jfif", "jfif-tbnl", "jpe"],
+			false
 		);
 		$this->formats[] = new ImageFormat(
 			"png",
@@ -39,6 +40,12 @@ class ImageFormats {
 			"image/avif",
 			"imagecreatefromavif",
 			"imageavif"
+		);
+		$this->formats[] = new ImageFormat(
+			"svg",
+			"image/svg+xml",
+			null,
+			null
 		);
 	}
 

@@ -5,14 +5,33 @@ declare(strict_types=1);
 namespace App\Application\Actions\images;
 
 use App\Application\Actions\ActionError;
+use App\Application\Actions\GenericImageAction;
 use App\Application\Errors\ForbiddenException;
+use App\Images\Formats\ImageFormats;
 use App\Images\Info\ImageDimensions;
 use App\Images\Request\ResizeRequest;
+use App\Images\Resizer\ImageResizer;
+use App\Images\Storage\ImageStorage;
 use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Log\LoggerInterface;
 use Zavadil\Common\Helpers\HashHelper;
 use Zavadil\Common\Helpers\StringHelper;
+use Zavadil\Common\Settings\Settings;
 
-class ViewImageResizedAction extends ImageAction {
+class ViewResizedImageAction extends GenericImageAction {
+
+	protected ImageResizer $imageResizer;
+
+	public function __construct(
+		LoggerInterface $logger,
+		Settings $settings,
+		ImageFormats $formats,
+		ImageResizer $imageResizer,
+		ImageStorage $imageStorage
+	) {
+		parent::__construct($logger, $settings, $formats, $imageStorage);
+		$this->imageResizer = $imageResizer;
+	}
 
 	protected function action(): Response {
 		$name = $this->requireArg('name');

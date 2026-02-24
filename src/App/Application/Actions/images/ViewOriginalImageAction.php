@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace App\Application\Actions\images;
 
 use App\Application\Actions\ActionError;
+use App\Application\Actions\GenericImageAction;
 use Psr\Http\Message\ResponseInterface as Response;
 
-class ViewImageOriginalAction extends ImageAction {
+class ViewOriginalImageAction extends GenericImageAction {
 
 	protected function action(): Response {
 		$name = $this->requireArg('name');

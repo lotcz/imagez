@@ -11,7 +11,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
 use Zavadil\Common\Settings\Settings;
 
-abstract class Action {
+abstract class GenericAction {
 
 	protected LoggerInterface $logger;
 

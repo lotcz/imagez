@@ -4,18 +4,22 @@ declare(strict_types=1);
 
 namespace App;
 
+use App\Application\Actions\color\GuessBackgroundColorAction;
+use App\Application\Actions\color\RemoveBackgroundColorAction;
+use App\Application\Actions\health\ViewHealthImageAction;
 use App\Application\Actions\images\DeleteImageAction;
+use App\Application\Actions\images\UploadFromUrlImageAction;
 use App\Application\Actions\images\UploadImageAction;
-use App\Application\Actions\images\UploadImageFromUrlAction;
-use App\Application\Actions\images\ViewImageHealthAction;
-use App\Application\Actions\images\ViewImageOriginalAction;
-use App\Application\Actions\images\ViewImageResizedAction;
+use App\Application\Actions\images\ViewOriginalImageAction;
+use App\Application\Actions\images\ViewResizedImageAction;
 use App\Application\Actions\status\StatusAction;
 use App\Application\Actions\upload\UploadAction;
 use App\Application\Errors\HttpErrorHandler;
 use App\Application\Errors\ShutdownHandler;
 use App\Application\ResponseEmitter\ImageResponseEmitter;
 use App\Application\ResponseEmitter\ResponseEmitter;
+use App\Images\Color\ColorAnalyzer;
+use App\Images\Color\GdColorAnalyzer;
 use App\Images\Formats\ImageFormats;
 use App\Images\Resizer\GdImageResizer;
 use App\Images\Resizer\ImageResizer;
@@ -73,8 +77,9 @@ class ImagezApp {
 
 		// more services
 		$containerBuilder->addDefinitions([ImageFormats::class => new ImageFormats()]);
-		$containerBuilder->addDefinitions([ImageResizer::class => \DI\autowire(GdImageResizer::class)]);
 		$containerBuilder->addDefinitions([ImageStorage::class => \DI\autowire(DiskImageStorage::class)]);
+		$containerBuilder->addDefinitions([ImageResizer::class => \DI\autowire(GdImageResizer::class)]);
+		$containerBuilder->addDefinitions([ColorAnalyzer::class => \DI\autowire(GdColorAnalyzer::class)]);
 
 		$container = $containerBuilder->build();
 
@@ -101,11 +106,18 @@ class ImagezApp {
 
 		$this->app->group('/images', function (RouteCollectorProxy $group) {
 			$group->post('/upload', UploadImageAction::class);
-			$group->post('/upload-url', UploadImageFromUrlAction::class);
+			$group->post('/upload-url', UploadFromUrlImageAction::class);
+
 			$group->delete('/original/{name}', DeleteImageAction::class);
-			$group->get('/health/{name}', ViewImageHealthAction::class);
-			$group->get('/original/{name}', ViewImageOriginalAction::class);
-			$group->get('/resized/{name}', ViewImageResizedAction::class);
+
+			$group->get('/health/{name}', ViewHealthImageAction::class);
+			$group->get('/original/{name}', ViewOriginalImageAction::class);
+			$group->get('/resized/{name}', ViewResizedImageAction::class);
+
+			$group->group('/colors', function (RouteCollectorProxy $group) {
+				$group->get('/guess-background/{name}', GuessBackgroundColorAction::class);
+				$group->get('/remove-background/{name}', RemoveBackgroundColorAction::class);
+			});
 		});
 	}
 

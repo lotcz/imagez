@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Images\Storage;
 
+use App\Images\Info\ImageInfo;
 use App\Images\Request\ResizeRequest;
 
 interface ImageStorage {
@@ -26,4 +27,5 @@ interface ImageStorage {
 
 	public function deleteResized(ResizeRequest $imageRequest): void;
 
+	public function importImageFile(string $tmpPath): ImageInfo;
 }

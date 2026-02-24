@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace App\Images\Storage;
 
+use App\Application\Errors\BadRequestException;
 use App\Images\Formats\ImageFormats;
+use App\Images\Info\ImageInfo;
 use App\Images\Request\ResizeRequest;
 use DirectoryIterator;
 use Psr\Log\LoggerInterface;
+use Zavadil\Common\Helpers\HashHelper;
 use Zavadil\Common\Helpers\PathHelper;
+use Zavadil\Common\Helpers\StringHelper;
 use Zavadil\Common\Settings\Settings;
 
 class DiskImageStorage implements ImageStorage {
@@ -17,12 +21,15 @@ class DiskImageStorage implements ImageStorage {
 
 	private ImageFormats $formats;
 
+	private Settings $settings;
+
 	private string $baseDir;
 
 	private string $originalDir;
 
 	public function __construct(LoggerInterface $logger, Settings $settings, ImageFormats $formats) {
 		$this->logger = $logger;
+		$this->settings = $settings;
 		$this->formats = $formats;
 
 		$this->baseDir = $settings->get('imageStorePath');
@@ -115,4 +122,62 @@ class DiskImageStorage implements ImageStorage {
 		$this->deleteFile($this->getResizedPath($imageRequest));
 	}
 
+	public function importImageFile(string $tmpPath): ImageInfo {
+		$imageInfo = new ImageInfo($tmpPath);
+		$tmpFileName = $imageInfo->getFileName();
+
+		/* check if image exists */
+		if (!$imageInfo->exists()) {
+			throw new BadRequestException("Something went wrong, file $tmpPath does not exist");
+		}
+
+		/* check file size */
+		$size = $imageInfo->getFileSize();
+		if ($size <= 0) {
+			throw new BadRequestException("Downloaded image $tmpFileName is empty");
+		}
+
+		$maxBytes = $this->settings->get('maxImageSizeBytes', 0);
+		if ($maxBytes > 0 && $size > $maxBytes) {
+			throw new BadRequestException("Image size $size of $tmpFileName exceeds max allowed size $maxBytes");
+		}
+
+		/* check mime type/extension */
+		if (StringHelper::isBlank($imageInfo->getMimeType()) && StringHelper::isBlank($imageInfo->getExtension())) {
+			throw new BadRequestException("Downloaded image $tmpFileName has neither a mimetype or extension!");
+		}
+
+		/* check format */
+		$originalFilename = $tmpFileName;
+		$originalExtension = PathHelper::getFileExt($originalFilename);
+
+		$imageFormat = $this->formats->findByExtension($originalExtension);
+		if ($imageFormat === null) {
+			$imageFormat = $this->formats->findByMimeType($imageInfo->getMimeType());
+		}
+
+		if ($imageFormat === null) {
+			throw new BadRequestException("Image $tmpFileName is not of a supported type!");
+		}
+
+		/* check image dimensions */
+		if ($imageInfo->getDimensions()->isZero()) {
+			throw new BadRequestException("Downloaded $tmpFileName image has zero size!");
+		}
+
+		/* store if doesn't exist yet */
+		$hash = HashHelper::fileHash($tmpPath);
+		$name = $hash . '.' . $imageFormat->extension;
+
+		$path = $this->getOriginalPath($name);
+
+		if ($this->fileExists($path)) {
+			$this->logger->info("File $name already exists, keeping only the original file");
+			unlink($tmpPath);
+		} else {
+			rename($tmpPath, $path);
+		}
+
+		return new ImageInfo($path);
+	}
 }

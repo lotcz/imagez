@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Application\Actions\status;
 
-use App\Application\Actions\Action;
+use App\Application\Actions\GenericAction;
 use App\AppVersion;
 use Psr\Http\Message\ResponseInterface as Response;
 
-class StatusAction extends Action {
+class StatusAction extends GenericAction {
 
 	protected function action(): Response {
 		$version = AppVersion::APP_VERSION;

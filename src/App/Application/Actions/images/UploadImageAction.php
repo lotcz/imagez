@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace App\Application\Actions\images;
 
 use App\Application\Actions\ActionError;
+use App\Application\Actions\GenericImageAction;
 use Psr\Http\Message\ResponseInterface as Response;
 use Zavadil\Common\Helpers\PathHelper;
 
-class UploadImageAction extends ImageAction {
+class UploadImageAction extends GenericImageAction {
 
 	protected function action(): Response {
 		$this->checkSecureToken();
@@ -44,7 +45,7 @@ class UploadImageAction extends ImageAction {
 		$uploadedFile->moveTo($tmpPath);
 
 		try {
-			$info = $this->imageResizer->importImageFile($tmpPath);
+			$info = $this->imageStorage->importImageFile($tmpPath);
 			$health = $info->getHealthPayload();
 			return $this->respondWithData($health);
 		} finally {

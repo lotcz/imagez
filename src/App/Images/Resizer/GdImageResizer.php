@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Images\Resizer;
 
-use App\Application\Errors\BadRequestException;
 use App\Images\Formats\ImageFormats;
 use App\Images\Info\ImageDimensions;
 use App\Images\Info\ImageInfo;
@@ -15,8 +14,7 @@ use App\Images\Request\VerticalAlign;
 use App\Images\Storage\ImageStorage;
 use Psr\Log\LoggerInterface;
 use Throwable;
-use Zavadil\Common\Helpers\HashHelper;
-use Zavadil\Common\Helpers\PathHelper;
+use Zavadil\Common\Helpers\IntegerHelper;
 use Zavadil\Common\Helpers\StringHelper;
 use Zavadil\Common\Settings\Settings;
 
@@ -97,7 +95,7 @@ class GdImageResizer implements ImageResizer {
 				$new_aspect = (float)$resizeRequest->size->x / $resizeRequest->size->y;
 
 				if ($original_aspect > $new_aspect) {
-					$srcSize->x = intval(round((float)$originalSize->y * $new_aspect));
+					$srcSize->x = IntegerHelper::round((float)$originalSize->y * $new_aspect);
 					$xdiff = $originalSize->x - $srcSize->x;
 					switch ($resizeRequest->horizontalAlign) {
 						case HorizontalAlign::LEFT:
@@ -108,10 +106,10 @@ class GdImageResizer implements ImageResizer {
 							break;
 						case HorizontalAlign::CENTER:
 						default:
-							$srcStart->x = intval(round((float)$xdiff / 2));
+							$srcStart->x = IntegerHelper::round((float)$xdiff / 2);
 					}
 				} else {
-					$srcSize->y = intval(round((float)$originalSize->x / $new_aspect));
+					$srcSize->y = IntegerHelper::round((float)$originalSize->x / $new_aspect);
 					$ydiff = $originalSize->y - $srcSize->y;
 					switch ($resizeRequest->verticalAlign) {
 						case VerticalAlign::TOP:
@@ -122,7 +120,7 @@ class GdImageResizer implements ImageResizer {
 							break;
 						case VerticalAlign::CENTER:
 						default:
-							$srcStart->y = intval(round((float)$ydiff / 2));
+							$srcStart->y = IntegerHelper::round((float)$ydiff / 2);
 					}
 				}
 				break;
@@ -131,7 +129,7 @@ class GdImageResizer implements ImageResizer {
 			default:
 				if ($originalSize->x > $resizeRequest->size->x) {
 					$destSize->x = $resizeRequest->size->x;
-					$destSize->y = intval(round((float)($originalSize->y / $originalSize->x) * $destSize->x));
+					$destSize->y = IntegerHelper::round(((float)$originalSize->y / $originalSize->x) * $destSize->x);
 				} else {
 					$destSize->x = $originalSize->x;
 					$destSize->y = $originalSize->y;
@@ -139,7 +137,7 @@ class GdImageResizer implements ImageResizer {
 
 				if ($destSize->y > $resizeRequest->size->y) {
 					$destSize->y = $resizeRequest->size->y;
-					$destSize->x = intval(round((float)($originalSize->x / $originalSize->y) * $destSize->y));
+					$destSize->x = IntegerHelper::round(((float)$originalSize->x / $originalSize->y) * $destSize->y);
 				}
 				break;
 		}
@@ -197,62 +195,4 @@ class GdImageResizer implements ImageResizer {
 		@imagedestroy($tmp);
 	}
 
-	public function importImageFile(string $tmpPath): ImageInfo {
-		$imageInfo = new ImageInfo($tmpPath);
-		$tmpFileName = $imageInfo->getFileName();
-
-		/* check if image exists */
-		if (!$imageInfo->exists()) {
-			throw new BadRequestException("Something went wrong, file $tmpPath does not exist");
-		}
-
-		/* check file size */
-		$size = $imageInfo->getFileSize();
-		if ($size <= 0) {
-			throw new BadRequestException("Downloaded image $tmpFileName is empty");
-		}
-
-		$maxBytes = $this->settings->get('maxImageSizeBytes', 0);
-		if ($maxBytes > 0 && $size > $maxBytes) {
-			throw new BadRequestException("Image size $size of $tmpFileName exceeds max allowed size $maxBytes");
-		}
-
-		/* check mime type/extension */
-		if (StringHelper::isBlank($imageInfo->getMimeType()) && StringHelper::isBlank($imageInfo->getExtension())) {
-			throw new BadRequestException("Downloaded image $tmpFileName has neither a mimetype or extension!");
-		}
-
-		/* check format */
-		$originalFilename = $tmpFileName;
-		$originalExtension = PathHelper::getFileExt($originalFilename);
-
-		$imageFormat = $this->formats->findByExtension($originalExtension);
-		if ($imageFormat === null) {
-			$imageFormat = $this->formats->findByMimeType($imageInfo->getMimeType());
-		}
-
-		if ($imageFormat === null) {
-			throw new BadRequestException("Image $tmpFileName is not of a supported type!");
-		}
-
-		/* check image dimensions */
-		if ($imageInfo->getDimensions()->isZero()) {
-			throw new BadRequestException("Downloaded $tmpFileName image has zero size!");
-		}
-
-		/* store if doesn't exist yet */
-		$hash = HashHelper::fileHash($tmpPath);
-		$name = $hash . '.' . $imageFormat->extension;
-
-		$path = $this->imageStorage->getOriginalPath($name);
-
-		if ($this->imageStorage->fileExists($path)) {
-			$this->logger->info("File $name already exists, keeping only the original file");
-			unlink($tmpPath);
-		} else {
-			rename($tmpPath, $path);
-		}
-
-		return new ImageInfo($path);
-	}
 }

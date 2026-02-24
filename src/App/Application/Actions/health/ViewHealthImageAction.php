@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Actions\images;
+namespace App\Application\Actions\health;
 
 use App\Application\Actions\ActionError;
+use App\Application\Actions\GenericImageAction;
 use App\Images\Info\ImageInfo;
 use Psr\Http\Message\ResponseInterface as Response;
 
-class ViewImageHealthAction extends ImageAction {
+class ViewHealthImageAction extends GenericImageAction {
 
 	protected function action(): Response {
 		$name = $this->requireArg('name');

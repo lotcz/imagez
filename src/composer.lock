@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bb3377ebf1b3f047be1474dac30f00a3",
+    "content-hash": "bfd19522c749a3e2bfb06d73cfeeb32f",
     "packages": [
         {
             "name": "fig/http-message-util",
@@ -64,27 +64,27 @@
         },
         {
             "name": "laravel/serializable-closure",
-            "version": "v2.0.8",
+            "version": "v2.0.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/serializable-closure.git",
-                "reference": "7581a4407012f5f53365e11bafc520fd7f36bc9b"
+                "reference": "8f631589ab07b7b52fead814965f5a800459cb3e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/serializable-closure/zipball/7581a4407012f5f53365e11bafc520fd7f36bc9b",
-                "reference": "7581a4407012f5f53365e11bafc520fd7f36bc9b",
+                "url": "https://api.github.com/repos/laravel/serializable-closure/zipball/8f631589ab07b7b52fead814965f5a800459cb3e",
+                "reference": "8f631589ab07b7b52fead814965f5a800459cb3e",
                 "shasum": ""
             },
             "require": {
                 "php": "^8.1"
             },
             "require-dev": {
-                "illuminate/support": "^10.0|^11.0|^12.0",
+                "illuminate/support": "^10.0|^11.0|^12.0|^13.0",
                 "nesbot/carbon": "^2.67|^3.0",
                 "pestphp/pest": "^2.36|^3.0|^4.0",
                 "phpstan/phpstan": "^2.0",
-                "symfony/var-dumper": "^6.2.0|^7.0.0"
+                "symfony/var-dumper": "^6.2.0|^7.0.0|^8.0.0"
             },
             "type": "library",
             "extra": {
@@ -121,20 +121,20 @@
                 "issues": "https://github.com/laravel/serializable-closure/issues",
                 "source": "https://github.com/laravel/serializable-closure"
             },
-            "time": "2026-01-08T16:22:46+00:00"
+            "time": "2026-02-03T06:55:34+00:00"
         },
         {
             "name": "lotcz/zavadil-php-common",
-            "version": "1.2.11",
+            "version": "1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lotcz/zavadil-php-common.git",
-                "reference": "6bdb4e39a0f8d0187654517842ad2787e3f6c4c4"
+                "reference": "de3c3bc0a4c9f22044caa1aa541a0eb2dab3c4a7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lotcz/zavadil-php-common/zipball/6bdb4e39a0f8d0187654517842ad2787e3f6c4c4",
-                "reference": "6bdb4e39a0f8d0187654517842ad2787e3f6c4c4",
+                "url": "https://api.github.com/repos/lotcz/zavadil-php-common/zipball/de3c3bc0a4c9f22044caa1aa541a0eb2dab3c4a7",
+                "reference": "de3c3bc0a4c9f22044caa1aa541a0eb2dab3c4a7",
                 "shasum": ""
             },
             "require": {
@@ -166,9 +166,9 @@
             "description": "Common PHP utilities and helper functions",
             "support": {
                 "issues": "https://github.com/lotcz/zavadil-php-common/issues",
-                "source": "https://github.com/lotcz/zavadil-php-common/tree/1.2.11"
+                "source": "https://github.com/lotcz/zavadil-php-common/tree/1.3.0"
             },
-            "time": "2025-11-15T23:54:26+00:00"
+            "time": "2026-02-23T19:29:23+00:00"
         },
         {
             "name": "monolog/monolog",
