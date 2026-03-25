@@ -11,6 +11,8 @@ interface ImageStorage {
 
 	public function obtainNewTempName(string $ext): string;
 
+	public function obtainNewTempPath(string $ext): string;
+
 	public function getOriginalPath(string $name): string;
 
 	public function getResizedPath(ResizeRequest $imageRequest): string;

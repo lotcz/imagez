@@ -59,7 +59,7 @@ class GdImageResizer implements ImageResizer {
 
 		if ($originalFormat->image_create_func === 'Imagick') {
 			$tmpFormat = $this->formats->findByExtension("png");
-			$tmpPath = $this->imageStorage->obtainNewTempName($tmpFormat->extension);
+			$tmpPath = $this->imageStorage->obtainNewTempPath($tmpFormat->extension);
 			$page = $resizeRequest->page ?: 0;
 			$img = new \Imagick();
 			$img->setResolution(150, 150);

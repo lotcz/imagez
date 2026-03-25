@@ -63,6 +63,10 @@ class DiskImageStorage implements ImageStorage {
 		return $name;
 	}
 
+	public function obtainNewTempPath(string $ext): string {
+		return $this->getTempPath($this->obtainNewTempName($ext));
+	}
+
 	public function getOriginalPath(string $name): string {
 		return PathHelper::of($this->originalDir, $name);
 	}
