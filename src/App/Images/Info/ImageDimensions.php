@@ -16,7 +16,7 @@ class ImageDimensions {
 	}
 
 	public function isZero(): bool {
-		return $this->x <= 0 && $this->y <= 0;
+		return $this->x <= 0 || $this->y <= 0;
 	}
 
 }

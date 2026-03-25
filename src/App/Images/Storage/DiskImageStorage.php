@@ -27,6 +27,8 @@ class DiskImageStorage implements ImageStorage {
 
 	private string $originalDir;
 
+	private string $tmpDir;
+
 	public function __construct(LoggerInterface $logger, Settings $settings, ImageFormats $formats) {
 		$this->logger = $logger;
 		$this->settings = $settings;
@@ -43,19 +45,30 @@ class DiskImageStorage implements ImageStorage {
 			$this->logger->info("Creating original dir: $this->originalDir");
 			mkdir($this->originalDir, 0777, true);
 		}
+
+		$this->tmpDir = $settings->get('tmpPath');
+		if (empty($this->tmpDir)) $this->tmpDir = PathHelper::of($this->baseDir, 'tmp');
+		if (!file_exists($this->tmpDir)) {
+			$this->logger->info("Creating temp dir: $this->tmpDir");
+			mkdir($this->tmpDir, 0777, true);
+		}
 	}
 
-	public function obtainNewName(string $ext): string {
+	public function obtainNewTempName(string $ext): string {
 		$basename = bin2hex(random_bytes(12));
 		$name = $basename . '.' . $ext;
-		if ($this->originalExists($name)) {
-			return $this->obtainNewName($ext);
+		if ($this->tempExists($name)) {
+			return $this->obtainNewTempName($ext);
 		}
 		return $name;
 	}
 
 	public function getOriginalPath(string $name): string {
 		return PathHelper::of($this->originalDir, $name);
+	}
+
+	public function getTempPath(string $name): string {
+		return PathHelper::of($this->tmpDir, $name);
 	}
 
 	public function getResizedPath(ResizeRequest $imageRequest): string {
@@ -77,6 +90,10 @@ class DiskImageStorage implements ImageStorage {
 
 	public function resizeExists(ResizeRequest $imageRequest): bool {
 		return $this->fileExists($this->getResizedPath($imageRequest));
+	}
+
+	public function tempExists(string $name): bool {
+		return $this->fileExists($this->getTempPath($name));
 	}
 
 	private function deleteFile(string $path): void {
@@ -134,7 +151,7 @@ class DiskImageStorage implements ImageStorage {
 		/* check file size */
 		$size = $imageInfo->getFileSize();
 		if ($size <= 0) {
-			throw new BadRequestException("Downloaded image $tmpFileName is empty");
+			throw new BadRequestException("Image file $tmpFileName is empty");
 		}
 
 		$maxBytes = $this->settings->get('maxImageSizeBytes', 0);
@@ -144,7 +161,7 @@ class DiskImageStorage implements ImageStorage {
 
 		/* check mime type/extension */
 		if (StringHelper::isBlank($imageInfo->getMimeType()) && StringHelper::isBlank($imageInfo->getExtension())) {
-			throw new BadRequestException("Downloaded image $tmpFileName has neither a mimetype or extension!");
+			throw new BadRequestException("Image $tmpFileName has neither a mimetype or extension!");
 		}
 
 		/* check format */
@@ -161,9 +178,11 @@ class DiskImageStorage implements ImageStorage {
 		}
 
 		/* check image dimensions */
+		/*
 		if ($imageInfo->getDimensions()->isZero()) {
-			throw new BadRequestException("Downloaded $tmpFileName image has zero size!");
+			throw new BadRequestException("Image file $tmpFileName has zero dimension!");
 		}
+		*/
 
 		/* store if doesn't exist yet */
 		$hash = HashHelper::fileHash($tmpPath);

@@ -99,8 +99,8 @@ abstract class GenericAction {
 		return intval($this->params[$name]);
 	}
 
-	protected function getIntQueryParam(string $name, int $default): int {
-		if (!isset($this->params[$name])) {
+	protected function getIntQueryParam(string $name, ?int $default = null): ?int {
+		if (empty($this->params[$name])) {
 			return $default;
 		}
 		return intval($this->params[$name]);

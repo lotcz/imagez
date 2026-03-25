@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Images\Resizer;
 
+use App\Application\Errors\BadRequestException;
 use App\Images\Formats\ImageFormats;
 use App\Images\Info\ImageDimensions;
 use App\Images\Info\ImageInfo;
@@ -37,48 +38,63 @@ class GdImageResizer implements ImageResizer {
 
 	public function getResizedImagePath(string $originalPath, ResizeRequest $imageRequest): string {
 		$resizedPath = $this->imageStorage->getResizedPath($imageRequest);
-		if (!$this->imageStorage->fileExists($resizedPath)) {
-			$this->prepareResizedImage($originalPath, $resizedPath, $imageRequest);
-		}
-		return $resizedPath;
+		if ($this->imageStorage->fileExists($resizedPath)) return $resizedPath;
+		return $this->prepareResizedImage($originalPath, $resizedPath, $imageRequest);
 	}
 
-	private function prepareResizedImage(string $originalPath, string $resizedPath, ResizeRequest $resizeRequest) {
+	private function prepareResizedImage(string $originalPath, string $resizedPath, ResizeRequest $resizeRequest): ?string {
 		$info = new ImageInfo($originalPath);
-
-		$originalSize = $info->getDimensions();
-		if ($originalSize->isZero()) {
-			$this->logger->error("Image $originalPath has zero size!");
-			return;
-		}
 
 		$originalFormat = $this->formats->findByMimeType($info->getMimeType());
 		if ($originalFormat === null) {
 			$originalFormat = $this->formats->findByExtension($info->getExtension());
 		}
-
 		if ($originalFormat === null) {
-			$this->logger->error("Could not detect original format of image $originalPath");
-			return;
+			throw new BadRequestException("Could not detect original format of image $originalPath");
+		}
+		if ($originalFormat->image_create_func === null) {
+			// we don't know how to load this format
+			return $originalPath;
+		}
+
+		if ($originalFormat->image_create_func === 'Imagick') {
+			$tmpFormat = $this->formats->findByExtension("png");
+			$tmpPath = $this->imageStorage->obtainNewTempName($tmpFormat->extension);
+			$page = $resizeRequest->page ?: 0;
+			$img = new \Imagick();
+			$img->setResolution(150, 150);
+			$path = $originalPath . "[$page]";
+			$img->readImage($path);
+			$img->setImageFormat($tmpFormat->extension);
+			$img->flattenImages();
+			$img->writeImage($tmpPath);
+			$img->clear();
+			$img->destroy();
+			return $this->prepareResizedImage($tmpPath, $resizedPath, $resizeRequest);
+		}
+
+		$originalSize = $info->getDimensions();
+		if ($originalSize->isZero()) {
+			throw new BadRequestException("Image $originalPath has zero size!");
 		}
 
 		$targetFormat = StringHelper::isBlank($resizeRequest->imageExt)
 			? $originalFormat
 			: $this->formats->findByExtension($resizeRequest->imageExt);
 		if ($targetFormat === null) {
-			$this->logger->error("Could not detect target format $resizeRequest->imageExt for image $originalPath");
-			return;
+			throw new BadRequestException("Could not detect target format $resizeRequest->imageExt for image $originalPath");
 		}
-
-		$formatDesc = $resizeRequest->getResizedPath();
+		if ($originalFormat->image_save_func === null) {
+			// we don't know how to save this format
+			return $originalPath;
+		}
 
 		try {
 			$image_create_func = $originalFormat->image_create_func;
 			$img = @$image_create_func($originalPath);
+
 		} catch (Throwable $e) {
-			$message = sprintf('Error when resizing %s to format %s: %s', $originalPath, $formatDesc, $e->getMessage());
-			$this->logger->error($message);
-			return;
+			throw new BadRequestException("Error when loading image $originalPath: {$e->getMessage()}");
 		}
 
 		$srcStart = new ImageDimensions(0, 0);
@@ -193,6 +209,8 @@ class GdImageResizer implements ImageResizer {
 
 		@imagedestroy($img);
 		@imagedestroy($tmp);
+
+		return $resizedPath;
 	}
 
 }

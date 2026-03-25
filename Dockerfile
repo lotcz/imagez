@@ -4,6 +4,8 @@ FROM php:8.4-fpm
 RUN apt-get update && apt-get install -y \
     git \
     curl \
+    zip \
+    unzip \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
@@ -11,8 +13,10 @@ RUN apt-get update && apt-get install -y \
     libavif-dev \
     libjpeg62-turbo-dev \
     libwebp-dev \
-    zip \
-    unzip
+    libmagickwand-dev \
+    ghostscript \
+    libgs-dev \
+    imagemagick
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -24,6 +28,11 @@ RUN docker-php-ext-install -j$(nproc) gd
 # Install PHP extensions
 RUN docker-php-ext-install mbstring && docker-php-ext-enable mbstring
 
+# Install Imagemagick extension
+RUN pecl install imagick && docker-php-ext-enable imagick
+
+COPY docker/policy.xml /etc/ImageMagick-6/policy.xml
+
 # Install Xdebug
 RUN pecl install xdebug && docker-php-ext-enable xdebug
 
@@ -31,9 +40,3 @@ RUN pecl install xdebug && docker-php-ext-enable xdebug
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
-
-# Copy existing application directory contents
-COPY ./src /var/www/html
-
-# Copy existing application directory permissions
-COPY --chown=www-data:www-data . /var/www/html

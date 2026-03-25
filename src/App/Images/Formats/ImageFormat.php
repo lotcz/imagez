@@ -18,13 +18,16 @@ class ImageFormat {
 
 	public bool $transparent = true;
 
+	public bool $supportsPages = false;
+
 	public function __construct(
 		string $extension,
 		string $mimeType,
 		?string $image_create_func,
 		?string $image_save_func,
 		array $altExtensions = [],
-		bool $transparent = true
+		bool $transparent = true,
+		bool $supportsPages = false
 	) {
 		$this->extension = $extension;
 		$this->mimeType = $mimeType;
@@ -32,6 +35,7 @@ class ImageFormat {
 		$this->image_create_func = $image_create_func;
 		$this->image_save_func = $image_save_func;
 		$this->transparent = $transparent;
+		$this->supportsPages = $supportsPages;
 	}
 
 	public function hasExtension(string $ext) {

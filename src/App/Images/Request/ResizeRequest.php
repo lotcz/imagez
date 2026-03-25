@@ -23,13 +23,16 @@ class ResizeRequest {
 
 	public ?string $imageExt;
 
+	public ?int $page;
+
 	public function __construct(
 		string $name,
 		ImageDimensions $size,
 		string $resizeType,
 		?string $imageExt = null,
 		?string $verticalAlign = null,
-		?string $horizontalAlign = null
+		?string $horizontalAlign = null,
+		?int $page = null
 	) {
 		$this->name = $name;
 		$this->size = $size;
@@ -50,6 +53,8 @@ class ResizeRequest {
 			throw new BadRequestException("Horizontal align $horizontalAlign does not exist");
 		}
 		$this->horizontalAlign = StringHelper::lowercase($horizontalAlign);
+
+		$this->page = $page;
 	}
 
 	public function getResizedDirName(): string {
@@ -63,6 +68,9 @@ class ResizeRequest {
 		}
 		if (!StringHelper::isBlank($this->horizontalAlign)) {
 			$base .= "-{$this->horizontalAlign}";
+		}
+		if ($this->page !== null) {
+			$base .= "[{$this->page}]";
 		}
 		$base .= '.';
 		$base .= StringHelper::isBlank($this->imageExt) ? PathHelper::getFileExt($this->name) : $this->imageExt;
@@ -83,6 +91,9 @@ class ResizeRequest {
 		}
 		if (StringHelper::notBlank($this->horizontalAlign)) {
 			$base .= "-$this->horizontalAlign";
+		}
+		if ($this->page !== null) {
+			$base .= "-$this->page";
 		}
 		return $base;
 	}

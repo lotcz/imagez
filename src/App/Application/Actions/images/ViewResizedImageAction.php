@@ -56,7 +56,8 @@ class ViewResizedImageAction extends GenericImageAction {
 			$this->requireQueryParam('type'),
 			$this->getQueryParam('ext'),
 			$this->getQueryParam('v'),
-			$this->getQueryParam('h')
+			$this->getQueryParam('h'),
+			$this->getIntQueryParam('page')
 		);
 
 		$secretToken = $this->settings->get('secretToken');

@@ -51,6 +51,7 @@ To get resized image, you must provide image size and optionally other params
 - ext (optional, desired image extension - jpg, png, webp or gif)
 - v (optional, vertical align - top, center ,bottom, default center)
 - h (optional, horizontal align - left, center, right, default center)
+- page (optional, only for PDFs)
 
 #### Unsecured
 
@@ -63,7 +64,7 @@ This will work only if securityToken is not configured on the server:
 To get resized image securely you will need a validation token that is created from params (ext is optional, depending
 on if you used the param):
 
-    {secret-token}-{original_image_name}-{width}-{height}-{type}(-{ext})(-{v})(-{h})
+    {secret-token}-{original_image_name}-{width}-{height}-{type}(-{ext})(-{v})(-{h})(-{page})
 
 You will need to hash verification token (CRC32 hash in hex chars):
 

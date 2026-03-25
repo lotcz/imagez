@@ -47,6 +47,15 @@ class ImageFormats {
 			null,
 			null
 		);
+		$this->formats[] = new ImageFormat(
+			"pdf",
+			"application/pdf",
+			'Imagick',
+			null,
+			[],
+			false,
+			true
+		);
 	}
 
 	public function findByExtension(?string $ext): ?ImageFormat {

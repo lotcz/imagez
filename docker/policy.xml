@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policymap [
+	<!ELEMENT policymap (policy)*>
+	<!ELEMENT policy (#PCDATA)>
+	<!ATTLIST policy domain NMTOKEN #REQUIRED>
+	<!ATTLIST policy rights NMTOKEN #REQUIRED>
+	<!ATTLIST policy pattern NMTOKEN #IMPLIED>
+	]>
+<policymap>
+	<policy domain="coder" rights="read|write" pattern="PDF"/>
+	<policy domain="coder" rights="read|write" pattern="LABEL"/>
+</policymap>

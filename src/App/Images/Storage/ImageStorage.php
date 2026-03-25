@@ -9,7 +9,7 @@ use App\Images\Request\ResizeRequest;
 
 interface ImageStorage {
 
-	public function obtainNewName(string $ext): string;
+	public function obtainNewTempName(string $ext): string;
 
 	public function getOriginalPath(string $name): string;
 
