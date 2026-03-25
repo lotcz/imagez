@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "61b4fbdc280a34b2b84c88d6eea5abb7",
+    "content-hash": "021dbbc19c1b17f577f2c2a6be21beb1",
     "packages": [
         {
             "name": "fig/http-message-util",
@@ -125,16 +125,16 @@
         },
         {
             "name": "lotcz/zavadil-php-common",
-            "version": "2.1.5",
+            "version": "2.1.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lotcz/zavadil-php-common.git",
-                "reference": "18efe71322022872506f05f2ad08b45c4446fbe7"
+                "reference": "837f05c589b950e1a18986efc4e1607d8a8cbf38"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lotcz/zavadil-php-common/zipball/18efe71322022872506f05f2ad08b45c4446fbe7",
-                "reference": "18efe71322022872506f05f2ad08b45c4446fbe7",
+                "url": "https://api.github.com/repos/lotcz/zavadil-php-common/zipball/837f05c589b950e1a18986efc4e1607d8a8cbf38",
+                "reference": "837f05c589b950e1a18986efc4e1607d8a8cbf38",
                 "shasum": ""
             },
             "require": {
@@ -166,9 +166,9 @@
             "description": "Common PHP utilities and helper functions",
             "support": {
                 "issues": "https://github.com/lotcz/zavadil-php-common/issues",
-                "source": "https://github.com/lotcz/zavadil-php-common/tree/2.1.5"
+                "source": "https://github.com/lotcz/zavadil-php-common/tree/2.1.7"
             },
-            "time": "2026-03-25T18:55:03+00:00"
+            "time": "2026-03-25T19:47:18+00:00"
         },
         {
             "name": "monolog/monolog",

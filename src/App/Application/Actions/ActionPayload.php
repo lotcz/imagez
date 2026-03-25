@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\Actions;
 
 use JsonSerializable;
+use Zavadil\Common\Helpers\JsonHelper;
 
 class ActionPayload implements JsonSerializable {
 
@@ -37,7 +38,7 @@ class ActionPayload implements JsonSerializable {
 	}
 
 	#[\ReturnTypeWillChange]
-	public function jsonSerialize(): array {
-		return ($this->data !== null) ? $this->data : $this->error->jsonSerialize();
+	public function jsonSerialize(): mixed {
+		return ($this->data !== null) ? JsonHelper::normalizeForJson($this->data) : $this->error->jsonSerialize();
 	}
 }

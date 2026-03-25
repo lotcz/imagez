@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Images\Info;
 
 use Exception;
+use Zavadil\Common\Client\Imagez\Payload\ImageHealthPayload;
 use Zavadil\Common\Helpers\PathHelper;
 
 class ImageInfo {
@@ -40,9 +41,9 @@ class ImageInfo {
 		return new ImageDimensions(intval($info[0]), intval($info[1]));
 	}
 
-	public function getMimeType(): ?string {
+	public function getMimeType(): string {
 		$info = $this->getInfo();
-		return isset($info['mime']) ? $info['mime'] : null;
+		return $info['mime'] ?? '';
 	}
 
 	public function getFileName(): ?string {
@@ -57,14 +58,14 @@ class ImageInfo {
 		return filesize($this->path);
 	}
 
-	public function getHealthPayload(?string $name = null): array {
+	public function getHealthPayload(?string $name = null): ImageHealthPayload {
 		$size = $this->getDimensions();
-		return [
-			'name' => empty($name) ? $this->getFileName() : $name,
-			'size' => $this->getFileSize(),
-			'width' => $size->x,
-			'height' => $size->y,
-			'mime' => $this->getMimeType()
-		];
+		return ImageHealthPayload::of(
+			empty($name) ? $this->getFileName() : $name,
+			$this->getFileSize(),
+			$size->x,
+			$size->y,
+			$this->getMimeType()
+		);
 	}
 }
