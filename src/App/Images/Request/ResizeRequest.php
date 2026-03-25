@@ -6,6 +6,7 @@ namespace App\Images\Request;
 
 use App\Application\Errors\BadRequestException;
 use App\Images\Info\ImageDimensions;
+use Zavadil\Common\Helpers\ImagezHelper;
 use Zavadil\Common\Helpers\PathHelper;
 use Zavadil\Common\Helpers\StringHelper;
 
@@ -77,25 +78,18 @@ class ResizeRequest {
 		return $base;
 	}
 
-	public function getResizedPath(): string {
-		return PathHelper::of($this->getResizedDirName(), $this->getResizedFileName());
-	}
-
 	public function getVerificationTokenRawValue(string $secretToken): string {
-		$base = "$secretToken-{$this->name}-{$this->getResizedDirName()}";
-		if (StringHelper::notBlank($this->imageExt)) {
-			$base .= "-$this->imageExt";
-		}
-		if (StringHelper::notBlank($this->verticalAlign)) {
-			$base .= "-$this->verticalAlign";
-		}
-		if (StringHelper::notBlank($this->horizontalAlign)) {
-			$base .= "-$this->horizontalAlign";
-		}
-		if ($this->page !== null) {
-			$base .= "-$this->page";
-		}
-		return $base;
+		return ImagezHelper::createTokenRaw(
+			$secretToken,
+			$this->name,
+			$this->size->x,
+			$this->size->y,
+			$this->resizeType,
+			$this->imageExt,
+			$this->verticalAlign,
+			$this->horizontalAlign,
+			$this->page
+		);
 	}
 
 }

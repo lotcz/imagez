@@ -1,5 +1,5 @@
 {
-	"version": "1.5.0",
+	"version": "1.6.2",
 	"name": "smart-apiz/imagez",
 	"description": "Imagez smart API",
 	"keywords": [
@@ -18,7 +18,7 @@
 	],
 	"require": {
 		"php": "^8.4",
-		"lotcz/zavadil-php-common": "^1.3",
+		"lotcz/zavadil-php-common": "^2.1.5",
 		"monolog/monolog": "^2.8",
 		"php-di/php-di": "^7.1.1",
 		"slim/psr7": "^1.5",

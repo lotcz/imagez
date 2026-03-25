@@ -14,7 +14,7 @@ use App\Images\Resizer\ImageResizer;
 use App\Images\Storage\ImageStorage;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerInterface;
-use Zavadil\Common\Helpers\HashHelper;
+use Zavadil\Common\Helpers\ImagezHelper;
 use Zavadil\Common\Helpers\StringHelper;
 use Zavadil\Common\Settings\Settings;
 
@@ -65,7 +65,7 @@ class ViewResizedImageAction extends GenericImageAction {
 		if (StringHelper::notBlank($secretToken)) {
 			$userToken = StringHelper::lowercase($this->requireQueryParam('token'));
 			$rawToken = $resizeRequest->getVerificationTokenRawValue($secretToken);
-			$hash = HashHelper::crc32hex($rawToken);
+			$hash = ImagezHelper::hashToken($rawToken);
 			if ($this->settings->get('debugMode')) {
 				$this->logger->info("Hash for $name: $hash");
 			}
