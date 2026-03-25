@@ -27,6 +27,8 @@ class DiskImageStorage implements ImageStorage {
 
 	private string $originalDir;
 
+	private string $imagickDir;
+
 	private string $tmpDir;
 
 	public function __construct(LoggerInterface $logger, Settings $settings, ImageFormats $formats) {
@@ -52,6 +54,12 @@ class DiskImageStorage implements ImageStorage {
 			$this->logger->info("Creating temp dir: $this->tmpDir");
 			mkdir($this->tmpDir, 0777, true);
 		}
+
+		$this->imagickDir = PathHelper::of($this->tmpDir, 'imagick');
+		if (!file_exists($this->imagickDir)) {
+			$this->logger->info("Creating imagick dir: $this->imagickDir");
+			mkdir($this->imagickDir, 0777, true);
+		}
 	}
 
 	public function obtainNewTempName(string $ext): string {
@@ -73,6 +81,10 @@ class DiskImageStorage implements ImageStorage {
 
 	public function getTempPath(string $name): string {
 		return PathHelper::of($this->tmpDir, $name);
+	}
+
+	public function getImagickPath(string $name): string {
+		return PathHelper::of($this->imagickDir, $name);
 	}
 
 	public function getResizedPath(ResizeRequest $imageRequest): string {

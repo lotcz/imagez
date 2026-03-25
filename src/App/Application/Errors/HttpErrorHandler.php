@@ -8,8 +8,10 @@ use App\Application\Actions\ActionError;
 use App\Application\Actions\ActionPayload;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Handlers\ErrorHandler as SlimErrorHandler;
-use Throwable;
 
+/**
+ * Turns exception into response. Used for both handled and unhandled exceptions.
+ */
 class HttpErrorHandler extends SlimErrorHandler {
 
 	protected function respond(): Response {
@@ -20,15 +22,11 @@ class HttpErrorHandler extends SlimErrorHandler {
 			'An internal error has occurred while processing your request.'
 		);
 
-		if ($exception instanceof BadRequestException) {
-			$statusCode = 400;
-			$error->setType(ActionError::BAD_REQUEST);
-			$error->setMessage($exception->getMessage());
-		} else if ($exception instanceof ForbiddenException) {
-			$statusCode = 401;
-			$error->setType(ActionError::VERIFICATION_ERROR);
-			$error->setMessage($exception->getMessage());
-		} else if ($exception instanceof Throwable && $this->displayErrorDetails) {
+		if ($exception instanceof HttpException) {
+			$statusCode = $exception->getStatusCode();
+			$error->setType($exception->getErrorType());
+		}
+		if ($exception instanceof \Throwable) {
 			$error->setMessage($exception->getMessage());
 		}
 

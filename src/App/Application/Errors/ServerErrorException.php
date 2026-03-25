@@ -7,13 +7,13 @@ namespace App\Application\Errors;
 use App\Application\Actions\ActionError;
 use Exception;
 
-class ForbiddenException extends Exception implements HttpException {
+class ServerErrorException extends Exception implements HttpException {
 
 	public function getStatusCode(): int {
-		return 401;
+		return 500;
 	}
 
 	public function getErrorType(): string {
-		return ActionError::INSUFFICIENT_PRIVILEGES;
+		return ActionError::SERVER_ERROR;
 	}
 }

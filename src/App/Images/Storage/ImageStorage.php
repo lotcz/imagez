@@ -15,6 +15,10 @@ interface ImageStorage {
 
 	public function getOriginalPath(string $name): string;
 
+	public function getTempPath(string $name): string;
+
+	public function getImagickPath(string $name): string;
+
 	public function getResizedPath(ResizeRequest $imageRequest): string;
 
 	public function fileExists(string $path): bool;

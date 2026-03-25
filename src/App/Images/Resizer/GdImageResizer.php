@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Images\Resizer;
 
 use App\Application\Errors\BadRequestException;
+use App\Application\Errors\ServerErrorException;
 use App\Images\Formats\ImageFormats;
 use App\Images\Info\ImageDimensions;
 use App\Images\Info\ImageInfo;
@@ -16,8 +17,11 @@ use App\Images\Storage\ImageStorage;
 use Psr\Log\LoggerInterface;
 use Throwable;
 use Zavadil\Common\Helpers\IntegerHelper;
+use Zavadil\Common\Helpers\PathHelper;
 use Zavadil\Common\Helpers\StringHelper;
 use Zavadil\Common\Settings\Settings;
+
+const IMAGICK_FORMAT = 'jpg';
 
 class GdImageResizer implements ImageResizer {
 
@@ -42,6 +46,26 @@ class GdImageResizer implements ImageResizer {
 		return $this->prepareResizedImage($originalPath, $resizedPath, $imageRequest);
 	}
 
+	private function getImagickFilePath(string $originalPath, int $page = 0): string {
+		$fileName = PathHelper::getFileBase($originalPath) . ".$page." . IMAGICK_FORMAT;
+		$filePath = $this->imageStorage->getImagickPath($fileName);
+		if ($this->imageStorage->fileExists($filePath)) return $filePath;
+
+		if (!extension_loaded('imagick')) {
+			throw new ServerErrorException("Imagick extension not loaded!");
+		}
+
+		$img = new \Imagick();
+		$img->setResolution(300, 300); // image quality
+		$img->readImage($originalPath . "[$page]");
+		$img->setImageFormat(IMAGICK_FORMAT);
+		$img->mergeImageLayers(\Imagick::LAYERMETHOD_FLATTEN);
+		$img->writeImage($filePath);
+		$img->clear();
+
+		return $filePath;
+	}
+
 	private function prepareResizedImage(string $originalPath, string $resizedPath, ResizeRequest $resizeRequest): ?string {
 		$info = new ImageInfo($originalPath);
 
@@ -58,19 +82,8 @@ class GdImageResizer implements ImageResizer {
 		}
 
 		if ($originalFormat->image_create_func === 'Imagick') {
-			$tmpFormat = $this->formats->findByExtension("png");
-			$tmpPath = $this->imageStorage->obtainNewTempPath($tmpFormat->extension);
-			$page = $resizeRequest->page ?: 0;
-			$img = new \Imagick();
-			$img->setResolution(150, 150);
-			$path = $originalPath . "[$page]";
-			$img->readImage($path);
-			$img->setImageFormat($tmpFormat->extension);
-			$img->flattenImages();
-			$img->writeImage($tmpPath);
-			$img->clear();
-			$img->destroy();
-			return $this->prepareResizedImage($tmpPath, $resizedPath, $resizeRequest);
+			$imagickFile = $this->getImagickFilePath($originalPath, $resizeRequest->page ?: 0);
+			return $this->prepareResizedImage($imagickFile, $resizedPath, $resizeRequest);
 		}
 
 		$originalSize = $info->getDimensions();
